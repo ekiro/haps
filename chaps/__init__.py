@@ -11,6 +11,10 @@ class AlreadyConfigured(Exception):
     pass
 
 
+class NotConfigured(Exception):
+    pass
+
+
 class UnknownDependency(TypeError):
     pass
 
@@ -25,10 +29,19 @@ class Container(object):
     __configured = False
 
     def __new__(cls, *args, **kwargs):
+        if not cls.__configured:
+            raise NotConfigured
         if cls.__instance is None:
             class_ = cls if cls.__subclass is None else cls.__subclass
             cls.__instance = object.__new__(class_)
         return cls.__instance
+
+    @classmethod
+    def _reset(cls):
+        """Internal use only."""
+        cls.__instance = None
+        cls.__configured = False
+        cls.__subclass = None
 
     def get_object(self, name):
         try:
