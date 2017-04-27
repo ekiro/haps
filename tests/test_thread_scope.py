@@ -1,4 +1,8 @@
-import queue
+try:
+    import queue
+except ImportError:
+    import Queue as queue  # python2
+
 import threading
 
 from chaps.scope.thread import ThreadScope
