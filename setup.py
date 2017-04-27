@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='chaps',
-    version='0.1',
-    packages=['chaps'],
+    version='0.1.1',
+    packages=find_packages(),
     url='https://github.com/ekiro/chaps',
     license='MIT License',
     author='Piotr Karkut',
