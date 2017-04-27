@@ -6,6 +6,11 @@ from chaps.scope.singleton import SingletonScope
 INSTANCE_SCOPE = '__instance'  # default scope
 SINGLETON_SCOPE = '__singleton'
 
+try:
+    get_argspec = inspect.getfullargspec
+except AttributeError:  # python2
+    get_argspec = inspect.getargspec
+
 
 class AlreadyConfigured(Exception):
     pass
@@ -86,7 +91,7 @@ class Container(object):
 
 
 def inject(f):
-    args = inspect.getfullargspec(f).args
+    args = get_argspec(f).args
 
     def _inner(self):
         container = Container()
