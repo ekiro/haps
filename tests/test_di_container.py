@@ -47,6 +47,120 @@ def test_inject_class(some_class):
     assert isinstance(some_instance.some_class, some_class)
 
 
+def test_inject_class_using_class_decorator(some_class):
+    chaps.Container.configure({
+        'some_class': some_class
+    })
+
+    @chaps.inject('some_class')
+    class AnotherClass(object):
+        pass
+
+    some_instance = AnotherClass()
+
+    assert hasattr(some_instance, 'some_class')
+    assert isinstance(some_instance.some_class, some_class)
+
+
+def test_inject_class_using_class_decorator_with_init(some_class):
+    chaps.Container.configure({
+        'some_class': some_class
+    })
+
+    @chaps.inject('some_class')
+    class AnotherClass(object):
+        def __init__(self, arg):
+            self.arg = arg
+            assert hasattr(self, 'some_class')
+            assert isinstance(self.some_class, some_class)
+
+    some_instance = AnotherClass('value')
+
+    assert some_instance.arg == 'value'
+    assert hasattr(some_instance, 'some_class')
+    assert isinstance(some_instance.some_class, some_class)
+
+
+def test_inject_class_using_class_decorator_with_inherit1(some_class):
+    chaps.Container.configure({
+        'some_class': some_class
+    })
+
+    class BaseClass(object):
+        def __init__(self, arg):
+            self.arg = arg
+
+    @chaps.inject('some_class')
+    class AnotherClass(BaseClass):
+        def __init__(self, arg):
+            super(AnotherClass, self).__init__(arg)
+            assert hasattr(self, 'some_class')
+            assert isinstance(self.some_class, some_class)
+
+    some_instance = AnotherClass('value')
+
+    assert some_instance.arg == 'value'
+    assert hasattr(some_instance, 'some_class')
+    assert isinstance(some_instance.some_class, some_class)
+
+
+def test_inject_class_using_class_decorator_with_inherit2(some_class):
+    chaps.Container.configure({
+        'some_class': some_class
+    })
+
+    @chaps.inject('some_class')
+    class BaseClass(object):
+        def __init__(self, arg):
+            self.arg = arg
+            assert hasattr(self, 'some_class')
+            assert isinstance(self.some_class, some_class)
+
+    class AnotherClass(BaseClass):
+        def __init__(self, arg):
+            super(AnotherClass, self).__init__(arg)
+            assert hasattr(self, 'some_class')
+            assert isinstance(self.some_class, some_class)
+
+    some_instance = AnotherClass('value')
+
+    assert some_instance.arg == 'value'
+    assert hasattr(some_instance, 'some_class')
+    assert isinstance(some_instance.some_class, some_class)
+
+
+def test_inject_class_using_class_decorator_with_inherit(
+        some_class, some_class2):
+    chaps.Container.configure({
+        'some_class': some_class,
+        'some_class2': some_class2
+    })
+
+    @chaps.inject('some_class')
+    class BaseClass(object):
+        def __init__(self, arg):
+            self.arg = arg
+            assert hasattr(self, 'some_class')
+            assert isinstance(self.some_class, some_class)
+
+    @chaps.inject('some_class2')
+    class AnotherClass(BaseClass):
+        def __init__(self, arg):
+            super(AnotherClass, self).__init__(arg)
+            assert hasattr(self, 'some_class')
+            assert isinstance(self.some_class, some_class)
+            assert hasattr(self, 'some_class2')
+            assert isinstance(self.some_class2, some_class2)
+
+    some_instance = AnotherClass('value')
+
+    assert some_instance.arg == 'value'
+    assert hasattr(some_instance, 'some_class')
+    assert isinstance(some_instance.some_class, some_class)
+    assert hasattr(some_instance, 'some_class2')
+    assert isinstance(some_instance.some_class2, some_class2)
+
+
 def test_not_existing_scope():
     @chaps.scope('custom')
     class CustomScopedClass(object):

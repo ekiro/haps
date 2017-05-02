@@ -90,7 +90,7 @@ class Container(object):
         container.register_scope(SINGLETON_SCOPE, SingletonScope)
 
 
-def inject(f):
+def inject_function(f):
     args = get_argspec(f).args
 
     def _inner(self):
@@ -105,6 +105,27 @@ def inject(f):
         return f(self, **objects)
 
     return _inner
+
+
+def inject(*args):
+    if len(args) == 1 and inspect.isfunction(args[0]):
+        return inject_function(args[0])
+    else:
+        def inject_class(cls):
+            orig_init = cls.__init__
+
+            def __init__(self, *a, **kw):
+                container = Container()
+                for arg in args:
+                    obj = container.get_object(arg)
+                    setattr(self, arg, obj)
+                orig_init(self, *a, **kw)
+
+            cls.__init__ = __init__
+
+            return cls
+
+        return inject_class
 
 
 def scope(scope_type):
