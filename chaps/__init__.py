@@ -134,3 +134,19 @@ def scope(scope_type):
         return cls
 
     return __dec
+
+
+class Inject(object):
+    def __init__(self, name):
+        self.name = name
+        self.__prop_name = '__chaps_%s_%s_instance' % (name, id(self))
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        else:
+            obj = getattr(self, self.__prop_name, None)
+            if obj is None:
+                obj = Container().get_object(self.name)
+                setattr(instance, self.__prop_name, obj)
+            return obj
