@@ -129,7 +129,7 @@ def test_inject_class_using_class_decorator_with_inherit2(some_class):
     assert isinstance(some_instance.some_class, some_class)
 
 
-def test_inject_class_using_class_decorator_with_inherit(
+def test_inject_class_using_class_decorator_with_inherit3(
         some_class, some_class2):
     chaps.Container.configure({
         'some_class': some_class,
@@ -159,6 +159,37 @@ def test_inject_class_using_class_decorator_with_inherit(
     assert isinstance(some_instance.some_class, some_class)
     assert hasattr(some_instance, 'some_class2')
     assert isinstance(some_instance.some_class2, some_class2)
+
+
+def test_property_instance_getter(some_class, some_class2):
+    chaps.Container.configure({
+        'some_class': some_class
+    })
+
+    prop = chaps.Inject('some_class')
+    obj = some_class2()
+    instance = prop.__get__(obj, None)
+    assert isinstance(instance, some_class)
+    instance2 = prop.__get__(obj, None)
+    assert instance == instance2
+
+
+def test_inject_class_using_property_instance(some_class):
+    chaps.Container.configure({
+        'some_class': some_class
+    })
+
+    class AnotherClass(object):
+        injected_instance = chaps.Inject('some_class')
+
+    some_instance = AnotherClass()
+
+    assert hasattr(some_instance, 'injected_instance')
+    assert isinstance(some_instance.injected_instance, some_class)
+    instance1 = some_instance.injected_instance
+    instance2 = some_instance.injected_instance
+
+    assert instance1 is instance2
 
 
 def test_not_existing_scope():
