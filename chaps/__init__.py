@@ -145,7 +145,7 @@ class Inject(object):
         if instance is None:
             return self
         else:
-            obj = getattr(self, self.__prop_name, None)
+            obj = getattr(instance, self.__prop_name, None)
             if obj is None:
                 obj = Container().get_object(self.name)
                 setattr(instance, self.__prop_name, obj)
