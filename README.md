@@ -89,6 +89,17 @@ Container().register_scope(THREAD_SCOPE, ThreadScope)  # After configuration
 ```
 
 
+To set class scope, just use `scope` decorator:
+
+```python
+from chaps import scope, SINGLETON_SCOPE
+
+@scope(SINGLETON_SCOPE)
+class ExtraPump(object):
+    pass
+```
+
+
 # Usage examples
 
 See https://github.com/ekiro/chaps/tree/master/samples
