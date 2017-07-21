@@ -1,5 +1,6 @@
 import inspect
 
+from chaps.configparser import ConfigParser
 from chaps.scope.instance import InstanceScope
 from chaps.scope.singleton import SingletonScope
 
@@ -29,6 +30,9 @@ class UnknownScope(TypeError):
 
 
 class Container(object):
+    """
+    Dependency Injection container class
+    """
     __instance = None
     __subclass = None
     __configured = False
@@ -49,6 +53,15 @@ class Container(object):
         cls.__subclass = None
 
     def get_object(self, name):
+        """
+        Get object instance
+
+        Args:
+            name: name of requested dependency
+
+        Returns:
+            Desired object instance from scope
+        """
         try:
             class_ = self.config[name]
         except KeyError:
@@ -64,6 +77,15 @@ class Container(object):
         return scope.get_object(class_)
 
     def register_scope(self, name, scope_class):
+        """
+
+        Args:
+            name: scope identifier
+            scope_class: scope class/callable
+
+        Returns:
+
+        """
         if name in self.scopes:
             raise AlreadyConfigured('Scope %s already registered' % name)
         self.scopes[name] = scope_class()
@@ -73,6 +95,14 @@ class Container(object):
 
     @classmethod
     def configure(cls, conf, subclass=None):
+        """
+        Configure chaps container
+
+        Args:
+            conf: config dictionary
+            subclass: optional Container class
+
+        """
         if cls.__configured:
             raise AlreadyConfigured
         else:
@@ -88,6 +118,14 @@ class Container(object):
 
         container.register_scope(INSTANCE_SCOPE, InstanceScope)
         container.register_scope(SINGLETON_SCOPE, SingletonScope)
+
+    @classmethod
+    def configure_from_file(cls, filename, subclass=None):
+        config = ConfigParser(filename)
+        cls.configure(config.deps(), subclass=subclass)
+
+        for id_, cb in config.scopes().items():
+            Container().register_scope(id_, cb)
 
 
 def inject_function(f):

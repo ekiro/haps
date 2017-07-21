@@ -1,7 +1,22 @@
+import json
+
 import pytest
 
 import chaps
 from chaps.scope.instance import InstanceScope
+
+
+@pytest.fixture
+def cfg_file(tmpdir):
+    data = {
+        'deps': {
+            'container': 'chaps.Container'
+        }
+    }
+
+    f = tmpdir.join('cfg.json')
+    f.write(json.dumps(data))
+    return str(f.realpath())
 
 
 def test_configure():
@@ -29,6 +44,12 @@ def test_configure_class_and_get_object(some_class):
 
     some_instance = chaps.Container().get_object('some_class')
     assert isinstance(some_instance, some_class)
+
+
+def test_configure_class_from_file_and_get_object(cfg_file):
+    chaps.Container.configure_from_file(cfg_file)
+    some_instance = chaps.Container().get_object('container')
+    assert isinstance(some_instance, chaps.Container)
 
 
 def test_inject_class(some_class):
