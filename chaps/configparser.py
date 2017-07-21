@@ -33,6 +33,9 @@ class ConfigParser(object):
         return getattr(mod, obj_name)
 
     def _import_section(self, section):
+        """
+        Import section from config
+        """
         deps_list = self.config_data.get(section, {})
 
         ret = {}
@@ -42,7 +45,17 @@ class ConfigParser(object):
         return ret
 
     def deps(self):
+        """
+
+        Returns:
+            Dependency section {'name': callable}
+        """
         return self._import_section('deps')
 
     def scopes(self):
+        """
+
+        Returns:
+            Scopes section {'name': callable}
+        """
         return self._import_section('scopes')
