@@ -1,4 +1,7 @@
 import json
+import sys
+
+PY2 = sys.version_info < (3,)
 
 
 class ConfigParser(object):
@@ -23,6 +26,8 @@ class ConfigParser(object):
 
     @staticmethod
     def _import(imp):
+        if PY2:
+            imp = imp.encode('utf8')
         mod_name, obj_name = imp.rsplit('.', 1)
         mod = __import__(mod_name, fromlist=[obj_name])
         return getattr(mod, obj_name)
