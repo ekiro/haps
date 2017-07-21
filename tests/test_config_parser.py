@@ -19,7 +19,7 @@ def cfg_file(tmpdir):
 
     f = tmpdir.join('cfg.json')
     f.write(json.dumps(data))
-    return f.realpath()
+    return str(f.realpath())
 
 
 def test_module_import():
