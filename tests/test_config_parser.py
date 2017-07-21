@@ -2,7 +2,9 @@ import json
 
 import pytest
 
+from chaps import Container
 from chaps.configparser import ConfigParser
+from chaps.scope.thread import ThreadScope
 
 
 @pytest.fixture
@@ -31,3 +33,12 @@ def test_deps_parse(cfg_file):
     config = ConfigParser(cfg_file)
     deps = config.deps()
     assert {'config', 'container'} == set(deps)
+    assert deps['config'] is ConfigParser
+    assert deps['container'] is Container
+
+
+def test_scopes_parse(cfg_file):
+    config = ConfigParser(cfg_file)
+    scopes = config.scopes()
+    assert {'thread'} == set(scopes)
+    assert scopes['thread'] is ThreadScope

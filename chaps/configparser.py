@@ -32,11 +32,17 @@ class ConfigParser(object):
         mod = __import__(mod_name, fromlist=[obj_name])
         return getattr(mod, obj_name)
 
-    def deps(self):
-        deps_list = self.config_data.get('deps', {})
+    def _import_section(self, section):
+        deps_list = self.config_data.get(section, {})
 
         ret = {}
         for name, imp in deps_list.items():
             ret[name] = self._import(imp)
 
         return ret
+
+    def deps(self):
+        return self._import_section('deps')
+
+    def scopes(self):
+        return self._import_section('scopes')
