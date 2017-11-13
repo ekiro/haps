@@ -39,9 +39,12 @@ if __name__ == '__main__':
                     print('Thread %s -> %r' % (id(self), w))
                 time.sleep(0.01)
 
-    for _ in range(3):
-        t = MyThread()
+    threads = [MyThread() for _ in range(3)]
+    for t in threads:
         t.start()
+
+    for t in threads:
+        t.join()
 
         # Output
         # Thread 139626471148456 -> <Worker id=139626333099232
