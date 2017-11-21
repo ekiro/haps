@@ -1,4 +1,5 @@
 import inspect
+import sys
 
 from chaps.configparser import ConfigParser
 from chaps.scope.instance import InstanceScope
@@ -175,7 +176,11 @@ def scope(scope_type):
 
 
 class Inject(object):
-    def __init__(self, name):
+    def __init__(self, name=None):
+        if sys.version_info < (3, 6):
+            raise TypeError(
+                "__init__() missing 1 required positional argument: "
+                "'name'")
         self.name = name
         self.__prop_name = '__chaps_%s_%s_instance' % (name, id(self))
 
@@ -188,3 +193,12 @@ class Inject(object):
                 obj = Container().get_object(self.name)
                 setattr(instance, self.__prop_name, obj)
             return obj
+
+    if sys.version_info > (3, 6):
+        def __set_name__(self, owner, name):
+            if self.name is None:
+                type_ = owner.__annotations__.get(name)
+                if type_ is not None:
+                    self.name = type_
+                else:
+                    raise TypeError('No name or annotation for Inject')
