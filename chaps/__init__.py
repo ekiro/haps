@@ -8,11 +8,6 @@ from chaps.scope.singleton import SingletonScope
 INSTANCE_SCOPE = '__instance'  # default scope
 SINGLETON_SCOPE = '__singleton'
 
-try:
-    get_argspec = inspect.getfullargspec
-except AttributeError:  # python2
-    get_argspec = inspect.getargspec
-
 
 class AlreadyConfigured(Exception):
     pass
@@ -130,7 +125,7 @@ class Container(object):
 
 
 def inject_function(f):
-    args = get_argspec(f).args
+    args = inspect.getfullargspec(f).args
 
     def _inner(self):
         container = Container()
@@ -194,11 +189,10 @@ class Inject(object):
                 setattr(instance, self.__prop_name, obj)
             return obj
 
-    if sys.version_info > (3, 6):
-        def __set_name__(self, owner, name):
-            if self.name is None:
-                type_ = owner.__annotations__.get(name)
-                if type_ is not None:
-                    self.name = type_
-                else:
-                    raise TypeError('No name or annotation for Inject')
+    def __set_name__(self, owner, name):
+        if self.name is None:
+            type_ = owner.__annotations__.get(name)
+            if type_ is not None:
+                self.name = type_
+            else:
+                raise TypeError('No name or annotation for Inject')

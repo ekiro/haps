@@ -22,7 +22,7 @@ class CoffeeMaker(object):
 
 
 class Heater(HeatherInterface):
-    amazing_pump: ExtraPumpInterface = Inject()  # Can have different attr name
+    amazing_pump: ExtraPumpInterface = Inject()
 
     def __repr__(self):
         return '<Heater id=%s\namazing_pump=%r>' % (
