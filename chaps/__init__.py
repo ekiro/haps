@@ -1,4 +1,5 @@
 import inspect
+import sys
 
 from chaps.configparser import ConfigParser
 from chaps.scope.instance import InstanceScope
@@ -6,11 +7,6 @@ from chaps.scope.singleton import SingletonScope
 
 INSTANCE_SCOPE = '__instance'  # default scope
 SINGLETON_SCOPE = '__singleton'
-
-try:
-    get_argspec = inspect.getfullargspec
-except AttributeError:  # python2
-    get_argspec = inspect.getargspec
 
 
 class AlreadyConfigured(Exception):
@@ -129,7 +125,9 @@ class Container(object):
 
 
 def inject_function(f):
-    args = get_argspec(f).args
+    full_arg_spec = inspect.getfullargspec(f)
+    args = full_arg_spec.args
+    annotations = full_arg_spec.annotations
 
     def _inner(self):
         container = Container()
@@ -137,7 +135,11 @@ def inject_function(f):
         for arg in args:
             if arg in ('self',):
                 continue
-            obj = container.get_object(arg)
+            try:
+                obj_type = annotations[arg]
+            except KeyError:
+                obj_type = arg
+            obj = container.get_object(obj_type)
             objects[arg] = obj
             setattr(self, arg, obj)
         return f(self, **objects)
@@ -175,7 +177,11 @@ def scope(scope_type):
 
 
 class Inject(object):
-    def __init__(self, name):
+    def __init__(self, name=None):
+        if sys.version_info < (3, 6):
+            raise TypeError(
+                "__init__() missing 1 required positional argument: "
+                "'name'")
         self.name = name
         self.__prop_name = '__chaps_%s_%s_instance' % (name, id(self))
 
@@ -188,3 +194,11 @@ class Inject(object):
                 obj = Container().get_object(self.name)
                 setattr(instance, self.__prop_name, obj)
             return obj
+
+    def __set_name__(self, owner, name):
+        if self.name is None:
+            type_ = owner.__annotations__.get(name)
+            if type_ is not None:
+                self.name = type_
+            else:
+                raise TypeError('No name or annotation for Inject')
