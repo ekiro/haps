@@ -277,3 +277,26 @@ def test_inject_class_using_property_instance_annotation(some_class):
     instance2 = some_instance.injected_instance
 
     assert instance1 is instance2
+
+
+def test_inject_class_using_init_annotation(some_class):
+    class NewClass(some_class):
+        pass
+
+    chaps.Container.configure({
+        some_class: NewClass
+    })
+
+    class AnotherClass(object):
+        @chaps.inject
+        def __init__(self, injected_instance: some_class):
+            pass
+
+    some_instance = AnotherClass()
+
+    assert hasattr(some_instance, 'injected_instance')
+    assert isinstance(some_instance.injected_instance, NewClass)
+    instance1 = some_instance.injected_instance
+    instance2 = some_instance.injected_instance
+
+    assert instance1 is instance2

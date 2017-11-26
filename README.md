@@ -59,6 +59,39 @@ class CoffeeMaker(object):
     heater = Inject('heater')
 ```
 
+### 4. Property with annotation
+
+Just like property, but based on python 3.6 annotation
+
+
+```python
+from chaps import Container, Inject
+
+
+Container.configure({
+    Heather: Heater
+})
+
+class CoffeeMaker(object):
+    heater: Heater = Inject()
+```
+
+### 5. `__init__` decorator with annotations
+
+```python
+from chaps import inject
+
+Container.configure({
+    HeaterInterface: Heater  # Why not interface?
+})
+
+class CoffeeMaker(object):
+    @inject
+    def __init__(self, heater: HeaterInterface):
+        pass  # No need to assign variables to the instance manually
+```
+
+
 ## Done!
 
 That's it. Now you can inject heater instance transparently.
@@ -107,6 +140,13 @@ See https://github.com/ekiro/chaps/tree/master/samples
 # Testing
 
 Install `requirements.test.txt` and run `py.test` in main directory.
+
+# Changelog
+
+## 4.0
+
+- Drop support for python <3.6
+- Add annotation based injects
 
 # TODO
 

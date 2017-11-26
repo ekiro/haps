@@ -125,15 +125,20 @@ class Container(object):
 
 
 def inject_function(f):
-    args = inspect.getfullargspec(f).args
-
+    full_arg_spec = inspect.getfullargspec(f)
+    args = full_arg_spec.args
+    annotations = full_arg_spec.annotations
     def _inner(self):
         container = Container()
         objects = {}
         for arg in args:
             if arg in ('self',):
                 continue
-            obj = container.get_object(arg)
+            try:
+                obj_type = annotations[arg]
+            except KeyError:
+                obj_type = arg
+            obj = container.get_object(obj_type)
             objects[arg] = obj
             setattr(self, arg, obj)
         return f(self, **objects)
