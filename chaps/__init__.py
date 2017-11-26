@@ -128,6 +128,7 @@ def inject_function(f):
     full_arg_spec = inspect.getfullargspec(f)
     args = full_arg_spec.args
     annotations = full_arg_spec.annotations
+
     def _inner(self):
         container = Container()
         objects = {}
