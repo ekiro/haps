@@ -1,7 +1,7 @@
 from chaps import SINGLETON_SCOPE, Container, inject, scope
 
 
-class HeatherInterface:
+class HeaterInterface:
     pass
 
 
@@ -15,7 +15,7 @@ class ExtraPumpInterface(PumpInterface):
 
 class CoffeeMaker(object):
     @inject
-    def __init__(self, heater: HeatherInterface, pump: PumpInterface):
+    def __init__(self, heater: HeaterInterface, pump: PumpInterface):
         pass
 
     def make_coffee(self):
@@ -48,7 +48,7 @@ class ExtraPump(object):
 
 
 Container.configure({
-    HeatherInterface: Heater,
+    HeaterInterface: Heater,
     'heater': Heater,
     PumpInterface: Pump,
     ExtraPumpInterface: ExtraPump

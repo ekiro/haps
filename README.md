@@ -20,7 +20,7 @@ Container.configure({
 ```
 
 `heater` is a dependency name, and `Heater` is a class that will be
-instantiated and injected. `Heather` may also be a function or any callable object (i.e. factory).
+instantiated and injected. `Heater` may also be a function or any callable object (i.e. factory).
 
 
 Then, you should prepare your class. There are coulpe ways to do it:
@@ -69,7 +69,7 @@ from chaps import Container, Inject
 
 
 Container.configure({
-    Heather: Heater
+    Heater: Heater
 })
 
 class CoffeeMaker(object):
