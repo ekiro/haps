@@ -229,6 +229,11 @@ def inject(*args):
 
 
 def scope(scope_type):
+    """
+    Set scope of an instance
+    Params
+        scope_type: name of the registered scope
+    """
     def __dec(cls):
         cls.__chaps_custom_scope = scope_type
         return cls
@@ -237,6 +242,11 @@ def scope(scope_type):
 
 
 def base(interface):
+    """
+    Mark class as an interface
+    Params
+        interface: interface class
+    """
     base.interfaces.add(interface)
     return interface
 
@@ -245,6 +255,13 @@ base.interfaces = set()
 
 
 def service(cls=None, qualifier: str = None):
+    """
+    Mark class as an implementation of some interface
+    Params
+        cls: implementation class (required)
+        qualifier: required if there's another implementation registered
+    """
+
     def __inner(cls_):
         assert cls_ is not None
         service.implementations.append((cls_, qualifier))
