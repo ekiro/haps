@@ -1,8 +1,8 @@
-from chaps import Inject, service
+from chaps import Inject, dependency
 from samples.autodiscover.services.bases import IHeater, IPump
 
 
-@service
+@dependency
 class Heater(IHeater):
     extra_pump: IPump = Inject('extra_pump')
 
@@ -14,7 +14,7 @@ class Heater(IHeater):
             id(self), self.extra_pump)
 
 
-@service
+@dependency
 class Pump(IPump):
     heater: IHeater = Inject()
 

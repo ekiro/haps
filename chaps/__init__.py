@@ -163,7 +163,7 @@ class Container(object):
         walk(path)
 
         config = {}
-        for type_, qualifier in service.implementations:
+        for type_, qualifier in dependency.implementations:
             key = (find_base(base.interfaces, type_), qualifier)
             if key in config:
                 raise ConfigurationError(
@@ -171,7 +171,7 @@ class Container(object):
             config[key] = type_
 
         base.interfaces.clear()
-        service.implementations.clear()
+        dependency.implementations.clear()
 
         cls.configure(config, subclass=subclass)
 
@@ -253,7 +253,7 @@ def base(interface):
 base.interfaces = set()
 
 
-def service(cls=None, qualifier: str = None):
+def dependency(cls=None, qualifier: str = None):
     """
     Mark class as an implementation of some interface
     Params
@@ -263,7 +263,7 @@ def service(cls=None, qualifier: str = None):
 
     def __inner(cls_):
         assert cls_ is not None
-        service.implementations.append((cls_, qualifier))
+        dependency.implementations.append((cls_, qualifier))
         return cls_
 
     if qualifier is None:
@@ -272,7 +272,7 @@ def service(cls=None, qualifier: str = None):
         return __inner
 
 
-service.implementations = list()
+dependency.implementations = list()
 
 
 class Inject(object):
