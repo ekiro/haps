@@ -60,7 +60,7 @@ def test_inject_class(some_class):
     class AnotherClass(object):
         @chaps.inject
         def __init__(self, some_class):
-            pass
+            self.some_class = some_class
 
     some_instance = AnotherClass()
 
@@ -220,7 +220,7 @@ def test_custom_scope():
     class AnotherClass(object):
         @chaps.inject
         def __init__(self, custom_scoped_class):
-            pass
+            self.custom_scoped_class = custom_scoped_class
 
     some_instance = AnotherClass()
     assert isinstance(some_instance.custom_scoped_class, CustomScopedClass)
@@ -259,7 +259,7 @@ def test_inject_class_using_init_annotation(some_class):
     class AnotherClass(object):
         @chaps.inject
         def __init__(self, injected_instance: some_class):
-            pass
+            self.injected_instance = injected_instance
 
     some_instance = AnotherClass()
 
@@ -269,3 +269,29 @@ def test_inject_class_using_init_annotation(some_class):
     instance2 = some_instance.injected_instance
 
     assert instance1 is instance2
+
+
+def test_named_configuration_property_injection(some_class):
+    class NewClass(some_class):
+        pass
+
+    class NewClass2(some_class):
+        pass
+
+    chaps.Container.configure({
+        some_class: NewClass,
+        (some_class, 'extra'): NewClass2
+    })
+
+    class AnotherClass(object):
+        some_instance: some_class = chaps.Inject()
+        some_extra_instance: some_class = chaps.Inject('extra')
+
+    some_instance = AnotherClass()
+
+    assert isinstance(some_instance.some_instance, NewClass)
+    assert isinstance(some_instance.some_extra_instance, NewClass2)
+    instance1 = some_instance.some_instance
+    instance2 = some_instance.some_extra_instance
+
+    assert instance1 is not instance2

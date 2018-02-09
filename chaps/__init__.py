@@ -201,7 +201,6 @@ def inject_function(f):
                 obj_type = arg
             obj = container.get_object(obj_type)
             objects[arg] = obj
-            setattr(self, arg, obj)
         return f(self, **objects)
 
     return _inner
