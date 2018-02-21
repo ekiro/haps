@@ -1,4 +1,6 @@
+import importlib
 import inspect
+import pkgutil
 import sys
 
 from chaps.configparser import ConfigParser
@@ -10,6 +12,10 @@ SINGLETON_SCOPE = '__singleton'
 
 
 class AlreadyConfigured(Exception):
+    pass
+
+
+class ConfigurationError(Exception):
     pass
 
 
@@ -48,29 +54,31 @@ class Container(object):
         cls.__configured = False
         cls.__subclass = None
 
-    def get_object(self, name):
+    def get_object(self, type_, qualifier=None):
         """
         Get object instance
 
         Args:
-            name: name of requested dependency
+            type_: a type of requested dependency
+            qualifier: name of requested dependency (optional)
 
         Returns:
             Desired object instance from scope
         """
         try:
-            class_ = self.config[name]
+            class_ = self.config[(type_, qualifier)]
         except KeyError:
-            raise UnknownDependency('Unknown dependency %s' % name)
+            raise UnknownDependency(
+                'Unknown dependency %s [%s]' % (type_, qualifier))
 
         scope_id = getattr(class_, '__chaps_custom_scope', INSTANCE_SCOPE)
 
         try:
-            scope = self.scopes[scope_id]
+            _scope = self.scopes[scope_id]
         except KeyError:
             raise UnknownScope('Unknown scope with id %s' % scope_id)
 
-        return scope.get_object(class_)
+        return _scope.get_object(class_)
 
     def register_scope(self, name, scope_class):
         """
@@ -86,8 +94,8 @@ class Container(object):
             raise AlreadyConfigured('Scope %s already registered' % name)
         self.scopes[name] = scope_class()
 
-    def register_object(self, name, class_):
-        self.config[name] = class_
+    def register_object(self, type_, class_, qualifier=None):
+        self.config[(type_, qualifier)] = class_
 
     @classmethod
     def configure(cls, conf, subclass=None):
@@ -109,11 +117,63 @@ class Container(object):
         container.config = {}
         container.scopes = {}
 
-        for name, class_ in conf.items():
-            container.register_object(name, class_)
+        for key, class_ in conf.items():
+            if isinstance(key, tuple) and len(key) == 2:
+                type_, qualifier = key
+            else:
+                type_, qualifier = key, None
+
+            container.register_object(type_, class_, qualifier=qualifier)
 
         container.register_scope(INSTANCE_SCOPE, InstanceScope)
         container.register_scope(SINGLETON_SCOPE, SingletonScope)
+
+    @classmethod
+    def autodiscover(cls, path, subclass=None):
+        """
+        Autodiscover interfaces (bases) and implementations (services) in given
+        path.
+
+        Params
+            path: import path
+        """
+
+        def find_base(bases: set, implementation):
+            found = {b for b in bases if issubclass(implementation, b)}
+            if not found:
+                raise ConfigurationError(
+                    "No base defined for %r" % implementation)
+            elif len(found) > 1:
+                raise ConfigurationError(
+                    "More than one base found for %r" % implementation)
+            else:
+                return found.pop()
+
+        def walk(pkg):
+            if isinstance(pkg, str):
+                pkg = importlib.import_module(pkg)
+            results = {}
+            for loader, name, is_pkg in pkgutil.walk_packages(pkg.__path__):
+                full_name = pkg.__name__ + '.' + name
+                results[full_name] = importlib.import_module(full_name)
+                if is_pkg:
+                    results.update(walk(full_name))
+            return results
+
+        walk(path)
+
+        config = {}
+        for type_, qualifier in dependency.implementations:
+            key = (find_base(base.interfaces, type_), qualifier)
+            if key in config:
+                raise ConfigurationError(
+                    "Ambiguous implementation %s" % repr(key))
+            config[key] = type_
+
+        base.interfaces.clear()
+        dependency.implementations.clear()
+
+        cls.configure(config, subclass=subclass)
 
     @classmethod
     def configure_from_file(cls, filename, subclass=None):
@@ -141,7 +201,6 @@ def inject_function(f):
                 obj_type = arg
             obj = container.get_object(obj_type)
             objects[arg] = obj
-            setattr(self, arg, obj)
         return f(self, **objects)
 
     return _inner
@@ -169,11 +228,51 @@ def inject(*args):
 
 
 def scope(scope_type):
+    """
+    Set scope of an instance
+    Params
+        scope_type: name of the registered scope
+    """
     def __dec(cls):
         cls.__chaps_custom_scope = scope_type
         return cls
 
     return __dec
+
+
+def base(interface):
+    """
+    Mark class as an interface
+    Params
+        interface: interface class
+    """
+    base.interfaces.add(interface)
+    return interface
+
+
+base.interfaces = set()
+
+
+def dependency(cls=None, qualifier: str = None):
+    """
+    Mark class as an implementation of some interface
+    Params
+        cls: implementation class (required)
+        qualifier: required if there's another implementation registered
+    """
+
+    def __inner(cls_):
+        assert cls_ is not None
+        dependency.implementations.append((cls_, qualifier))
+        return cls_
+
+    if qualifier is None:
+        return __inner(cls)
+    else:
+        return __inner
+
+
+dependency.implementations = list()
 
 
 class Inject(object):
@@ -183,6 +282,7 @@ class Inject(object):
                 "__init__() missing 1 required positional argument: "
                 "'name'")
         self.name = name
+        self._type = None
         self.__prop_name = '__chaps_%s_%s_instance' % (name, id(self))
 
     def __get__(self, instance, owner):
@@ -191,14 +291,13 @@ class Inject(object):
         else:
             obj = getattr(instance, self.__prop_name, None)
             if obj is None:
-                obj = Container().get_object(self.name)
+                obj = Container().get_object(self.type_, qualifier=self.name)
                 setattr(instance, self.__prop_name, obj)
             return obj
 
     def __set_name__(self, owner, name):
-        if self.name is None:
-            type_ = owner.__annotations__.get(name)
-            if type_ is not None:
-                self.name = type_
-            else:
-                raise TypeError('No name or annotation for Inject')
+        type_ = owner.__annotations__.get(name)
+        if type_ is not None:
+            self.type_ = type_
+        else:
+            raise TypeError('No annotation for Inject')

@@ -3,9 +3,7 @@ python:
   - "3.6"
   - "3.6-dev"
   - "3.7-dev"
-before_install:
-  - pip install --upgrade pytest
 install:
-  - "python setup.py install"
   - "pip install -r requirements.test.txt"
+  - "python setup.py develop"
 script: py.test

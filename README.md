@@ -11,11 +11,13 @@ Chaps is a simple dependency injection library written in pure python (no depend
 First of all, on the beginning of your application, you have to configure
 DI container:
 
+### 1. Configuration dict
+
 ```python
 from chaps import Container
 
 Container.configure({
-    'heater': Heater
+    Heater: Heater
 })
 ```
 
@@ -23,45 +25,60 @@ Container.configure({
 instantiated and injected. `Heater` may also be a function or any callable object (i.e. factory).
 
 
+### 2. Autodiscover
+
+You can also let chaps to find and configure dependencies automatically:
+
+
+```python
+# core/iheater.py
+from chaps import base
+
+@base
+class IHeater:
+    ...
+
+
+# core/heater.py
+from chaps import dependency
+
+from core.iheater import IHeater
+
+@dependency
+class Heater(IHeater):
+    ...
+
+
+# main.py
+from chaps import Container
+
+Container.autodiscover('myapp.core')
+```
+
+
+
 Then, you should prepare your class. There are coulpe ways to do it:
 
-### 1. `__init__` decorator
+### 1. `__init__` decorator with annotations
 
 ```python
 from chaps import inject
+
+Container.configure({
+    HeaterInterface: Heater  # Why not interface?
+})
 
 class CoffeeMaker(object):
     @inject
-    def __init__(self, heater):
-        pass  # No need to assign variables to the instance manually
+    def __init__(self, heater: HeaterInterface):
+        self.heater = heater
 ```
 
-### 2. Class decorator
-
-```python
-from chaps import inject
-
-@inject('heater')
-class CoffeeMaker(object):
-    pass
-```
-
-### 3. Property
+### 2. Property
 
 Remember, a property is a lazy way to inject instance. `get_object` method from
 scope will be called when `Inject` property will be accessed for the first time.
 With previous methods, objects are injected at instance initialization stage.
-
-```python
-from chaps import Inject
-
-class CoffeeMaker(object):
-    heater = Inject('heater')
-```
-
-### 4. Property with annotation
-
-Just like property, but based on python 3.6 annotation
 
 
 ```python
@@ -74,21 +91,6 @@ Container.configure({
 
 class CoffeeMaker(object):
     heater: Heater = Inject()
-```
-
-### 5. `__init__` decorator with annotations
-
-```python
-from chaps import inject
-
-Container.configure({
-    HeaterInterface: Heater  # Why not interface?
-})
-
-class CoffeeMaker(object):
-    @inject
-    def __init__(self, heater: HeaterInterface):
-        pass  # No need to assign variables to the instance manually
 ```
 
 
@@ -147,6 +149,11 @@ Install `requirements.test.txt` and run `py.test` in main directory.
 
 - Drop support for python <3.6
 - Add annotation based injects
+
+## 5.0
+
+- Add autodiscover bases and dependencies with `@base` and `@dependency` decorator
+- Add named dependencies
 
 # TODO
 
