@@ -129,7 +129,7 @@ class Container(object):
         container.register_scope(SINGLETON_SCOPE, SingletonScope)
 
     @classmethod
-    def autodiscover(cls, path, subclass=None):
+    def autodiscover(cls, path, subclass=None, profiles: set = frozenset()):
         """
         Autodiscover interfaces (bases) and implementations (services) in given
         path.
@@ -163,15 +163,18 @@ class Container(object):
         walk(path)
 
         config = {}
-        for type_, qualifier in dependency.implementations:
+        for type_, qualifier, profile in dependency.implementations:
+            if profile is not None:
+                if profile.startswith('!'):
+                    if profile[1:] in profiles:
+                        continue
+                elif profile not in profiles:
+                    continue
             key = (find_base(base.interfaces, type_), qualifier)
             if key in config:
                 raise ConfigurationError(
                     "Ambiguous implementation %s" % repr(key))
             config[key] = type_
-
-        base.interfaces.clear()
-        dependency.implementations.clear()
 
         cls.configure(config, subclass=subclass)
 
@@ -233,6 +236,7 @@ def scope(scope_type):
     Params
         scope_type: name of the registered scope
     """
+
     def __dec(cls):
         cls.__chaps_custom_scope = scope_type
         return cls
@@ -253,7 +257,7 @@ def base(interface):
 base.interfaces = set()
 
 
-def dependency(cls=None, qualifier: str = None):
+def dependency(cls=None, qualifier: str = None, profile: str = None):
     """
     Mark class as an implementation of some interface
     Params
@@ -263,7 +267,7 @@ def dependency(cls=None, qualifier: str = None):
 
     def __inner(cls_):
         assert cls_ is not None
-        dependency.implementations.append((cls_, qualifier))
+        dependency.implementations.append((cls_, qualifier, profile))
         return cls_
 
     if qualifier is None:

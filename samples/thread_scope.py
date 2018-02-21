@@ -7,7 +7,7 @@ THREAD_SCOPE = 'thread'  # some unique id
 class Worker(object):
     @inject
     def __init__(self, local_data):
-        pass
+        self.local_data = local_data
 
     def __repr__(self):
         return '<Worker id=%s local_data=%r>' % (id(self), self.local_data)
