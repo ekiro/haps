@@ -4,7 +4,8 @@ from chaps import SINGLETON_SCOPE, Container, inject, scope
 class CoffeeMaker(object):
     @inject
     def __init__(self, heater, pump):
-        pass
+        self.heater = heater
+        self.pump = pump
 
     def make_coffee(self):
         return "heater: %r\npump: %r" % (self.heater, self.pump)
@@ -13,7 +14,7 @@ class CoffeeMaker(object):
 class Heater(object):
     @inject
     def __init__(self, extra_pump):
-        pass
+        self.extra_pump = extra_pump
 
     def __repr__(self):
         return '<Heater id=%s\nextra_pump=%r>' % (
@@ -23,7 +24,7 @@ class Heater(object):
 class Pump(object):
     @inject
     def __init__(self, heater):
-        pass
+        self.heater = heater
 
     def __repr__(self):
         return '<Pump id=%s heater=%r>' % (id(self), self.heater)

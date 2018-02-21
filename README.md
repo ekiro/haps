@@ -22,8 +22,7 @@ Container.configure({
 ```
 
 `heater` is a dependency name, and `Heater` is a class that will be
-instantiated and injected. `Heater` may also be a function or any callable object (i.e. factory).
-
+instantiated and injected. `
 
 ### 2. Autodiscover
 
@@ -65,12 +64,12 @@ Then, you should prepare your class. There are coulpe ways to do it:
 from chaps import inject
 
 Container.configure({
-    HeaterInterface: Heater  # Why not interface?
+    IHeater: Heater  # Why not interface?
 })
 
 class CoffeeMaker(object):
     @inject
-    def __init__(self, heater: HeaterInterface):
+    def __init__(self, heater: IHeater):
         self.heater = heater
 ```
 
@@ -133,6 +132,12 @@ from chaps import scope, SINGLETON_SCOPE
 class ExtraPump(object):
     pass
 ```
+
+## Profiles and qualifiers
+
+TODO
+
+For the
 
 
 # Usage examples
