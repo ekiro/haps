@@ -10,6 +10,6 @@ class ExtraPump(IPump):
 
 
 @dependency(qualifier="extra_pump", profile='dev')
-class ExtraPump(IPump):
+class ExtraPumpDev(IPump):
     def __repr__(self):
         return '<ExtraPump (dev) id=%s>' % (id(self),)
