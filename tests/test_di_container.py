@@ -175,3 +175,12 @@ def test_named_configuration_property_injection(some_class):
     instance2 = some_instance.some_extra_instance
 
     assert instance1 is not instance2
+
+
+def test_autodiscovery():
+    from samples.autodiscover.sample import (CoffeeMaker, IPump, IHeater)
+    chaps.Container.autodiscover('samples.autodiscover.services')
+
+    cm = CoffeeMaker()
+    assert isinstance(cm.pump, IPump)
+    assert isinstance(cm.heater, IHeater)
