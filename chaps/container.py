@@ -4,10 +4,12 @@ import pkgutil
 from functools import singledispatch, wraps
 from inspect import Signature
 from threading import RLock
-from types import ModuleType, FunctionType, MethodType
-from typing import (Any, Callable, Type, Optional, List, TypeVar, Dict, Union,
-                    Hashable)
+from types import FunctionType, ModuleType
+from typing import (Any, Callable, Dict, Hashable, List, Optional, Type,
+                    TypeVar, Union)
 
+from chaps.exceptions import (AlreadyConfigured, CallError, ConfigurationError,
+                              NotConfigured, UnknownDependency, UnknownScope)
 from chaps.scope import Scope
 from chaps.scope.instance import InstanceScope
 from chaps.scope.singleton import SingletonScope
@@ -16,30 +18,6 @@ INSTANCE_SCOPE = '__instance'  # default scope
 SINGLETON_SCOPE = '__singleton'
 
 T = TypeVar("T")
-
-
-class AlreadyConfigured(Exception):
-    pass
-
-
-class ConfigurationError(Exception):
-    pass
-
-
-class NotConfigured(Exception):
-    pass
-
-
-class UnknownDependency(TypeError):
-    pass
-
-
-class UnknownScope(TypeError):
-    pass
-
-
-class CallError(TypeError):
-    pass
 
 
 class Egg:
@@ -238,9 +216,7 @@ def egg(qualifier: Hashable = None):
         raise AttributeError('Wrong egg obj type')
 
     @egg_dec.register(FunctionType)
-    @egg_dec.register(MethodType)
-    @egg_dec.register(classmethod)
-    def _(obj: Factory_T) -> Factory_T:
+    def _f(obj: Factory_T) -> Factory_T:
         spec = inspect.signature(obj)
         return_annotation = spec.return_annotation
         if return_annotation is Signature.empty:
@@ -254,7 +230,7 @@ def egg(qualifier: Hashable = None):
         return obj
 
     @egg_dec.register(Type)
-    def _(obj: T) -> T:
+    def _o(obj: T) -> T:  # noqa
         egg.factories.append(Egg(
             type_=obj,
             qualifier=qualifier,

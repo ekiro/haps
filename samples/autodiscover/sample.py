@@ -16,4 +16,3 @@ class CoffeeMaker:
 if __name__ == '__main__':
     Container.autodiscover('samples.autodiscover.services')
     print(CoffeeMaker().make_coffee())
-

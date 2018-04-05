@@ -1,4 +1,4 @@
-from chaps import Container, inject, scope, Egg
+from chaps import Container, Egg, inject, scope
 from chaps.scope.thread import ThreadScope
 
 THREAD_SCOPE = 'thread'  # some unique id
@@ -31,7 +31,6 @@ if __name__ == '__main__':
 
     lock = RLock()
 
-
     class MyThread(Thread):
         def run(self):
             for _ in range(3):
@@ -39,7 +38,6 @@ if __name__ == '__main__':
                     w = Worker()
                     print('Thread %s -> %r' % (id(self), w))
                 time.sleep(0.01)
-
 
     threads = [MyThread() for _ in range(3)]
     for t in threads:

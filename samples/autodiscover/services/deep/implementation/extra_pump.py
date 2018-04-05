@@ -1,5 +1,5 @@
-from chaps import SINGLETON_SCOPE, egg, scope, Inject, inject
-from samples.autodiscover.services.bases import IPump, IHeater
+from chaps import SINGLETON_SCOPE, Inject, egg, inject, scope
+from samples.autodiscover.services.bases import IHeater, IPump
 
 
 class HelpingPump(IPump):
