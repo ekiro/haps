@@ -42,19 +42,6 @@ class CallError(TypeError):
     pass
 
 
-# class ConfigItem:
-#     def __init__(self, name: Optional[str] = None,
-#                  interface: Optional[Type] = None,
-#                  factory: Callable[..., Any] = None) -> None:
-#         if not (name and interface):
-#             raise ConfigurationError('name or interface not provided')
-#         self.name = name
-#         self.interface = interface
-#         self.factory = factory
-#
-#     __slots__ = ('name', 'interface', 'factory')
-
-
 class Egg:
     base_: Optional[Type]
     type_: Type
@@ -123,7 +110,7 @@ class Container:
 
     @classmethod
     def autodiscover(
-            cls, module_path: str, profiles: set, subclass=None) -> None:
+            cls, module_path: str, subclass=None) -> None:
         def find_base(bases: set, implementation: Type):
             found = {b for b in bases if issubclass(implementation, b)}
             if not found:
@@ -151,12 +138,6 @@ class Container:
         config: List[Egg] = []
         configured = set()
         for egg_ in egg.factories:
-            # if profile is not None:
-            #     if profile.startswith('!'):
-            #         if profile[1:] in profiles:
-            #             continue
-            #     elif profile not in profiles:
-            #         continue
             base_ = find_base(base.classes, egg_.type_)
             if (base_, egg_.qualifier) in configured:
                 raise ConfigurationError(
@@ -177,7 +158,7 @@ class Container:
             raise UnknownDependency(
                 'Unknown dependency %s' % base_)
 
-        scope_id = getattr(egg_.type_, '__chaps_custom_scope', INSTANCE_SCOPE)
+        scope_id = getattr(egg_.egg, '__chaps_custom_scope', INSTANCE_SCOPE)
 
         try:
             _scope = self.scopes[scope_id]
@@ -251,7 +232,7 @@ base.classes = set()
 Factory_T = Callable[..., T]
 
 
-def egg(qualifier: Hashable = None, profile: Hashable = None):
+def egg(qualifier: Hashable = None):
     @singledispatch
     def egg_dec(_: Any) -> T:
         raise AttributeError('Wrong egg obj type')

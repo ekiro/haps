@@ -2,5 +2,5 @@ from chaps.scope import Scope
 
 
 class InstanceScope(Scope):
-    def get_object(self, class_):
-        return class_()
+    def get_object(self, egg_):
+        return egg_()

@@ -208,9 +208,9 @@ def test_custom_scope():
     class CustomScope(InstanceScope):
         get_object_called = False
 
-        def get_object(self, class_):
+        def get_object(self, egg_):
             CustomScope.get_object_called = True
-            return super(CustomScope, self).get_object(class_)
+            return super(CustomScope, self).get_object(egg_)
 
     chaps.Container.configure({
         'custom_scoped_class': CustomScopedClass
