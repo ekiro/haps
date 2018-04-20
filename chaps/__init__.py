@@ -67,6 +67,7 @@ class Container(object):
             Desired object instance from scope
         """
         try:
+            type_ = repr(type_)
             class_ = self.config[(type_, qualifier)]
         except KeyError:
             raise UnknownDependency(
@@ -96,6 +97,7 @@ class Container(object):
         self.scopes[name] = scope_class()
 
     def register_object(self, type_, class_, qualifier=None):
+        type_ = repr(type_)
         self.config[(type_, qualifier)] = class_
 
     @classmethod
