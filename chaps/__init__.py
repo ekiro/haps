@@ -2,6 +2,7 @@ import importlib
 import inspect
 import pkgutil
 import sys
+import functools
 
 from chaps.configparser import ConfigParser
 from chaps.scope.instance import InstanceScope
@@ -270,11 +271,10 @@ def dependency(cls=None, qualifier: str = None, profile: str = None):
         dependency.implementations.append((cls_, qualifier, profile))
         return cls_
 
-    if qualifier is None:
+    if cls:
         return __inner(cls)
     else:
         return __inner
-
 
 dependency.implementations = list()
 
