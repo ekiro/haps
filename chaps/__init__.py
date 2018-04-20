@@ -66,6 +66,7 @@ class Container(object):
             Desired object instance from scope
         """
         try:
+            type_ = repr(type_)
             class_ = self.config[(type_, qualifier)]
         except KeyError:
             raise UnknownDependency(
@@ -95,6 +96,7 @@ class Container(object):
         self.scopes[name] = scope_class()
 
     def register_object(self, type_, class_, qualifier=None):
+        type_ = repr(type_)
         self.config[(type_, qualifier)] = class_
 
     @classmethod
@@ -129,7 +131,7 @@ class Container(object):
         container.register_scope(SINGLETON_SCOPE, SingletonScope)
 
     @classmethod
-    def autodiscover(cls, path, subclass=None, profiles: set = frozenset()):
+    def autodiscover(cls, paths, subclass=None, profiles: set = frozenset()):
         """
         Autodiscover interfaces (bases) and implementations (services) in given
         path.
@@ -160,7 +162,7 @@ class Container(object):
                     results.update(walk(full_name))
             return results
 
-        walk(path)
+        [walk(path) for path in paths]
 
         config = {}
         for type_, qualifier, profile in dependency.implementations:
@@ -264,13 +266,12 @@ def dependency(cls=None, qualifier: str = None, profile: str = None):
         cls: implementation class (required)
         qualifier: required if there's another implementation registered
     """
-
     def __inner(cls_):
         assert cls_ is not None
         dependency.implementations.append((cls_, qualifier, profile))
         return cls_
 
-    if qualifier is None:
+    if cls:
         return __inner(cls)
     else:
         return __inner
