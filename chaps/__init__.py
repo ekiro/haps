@@ -130,7 +130,7 @@ class Container(object):
         container.register_scope(SINGLETON_SCOPE, SingletonScope)
 
     @classmethod
-    def autodiscover(cls, path, subclass=None, profiles: set = frozenset()):
+    def autodiscover(cls, paths, subclass=None, profiles: set = frozenset()):
         """
         Autodiscover interfaces (bases) and implementations (services) in given
         path.
@@ -161,7 +161,7 @@ class Container(object):
                     results.update(walk(full_name))
             return results
 
-        walk(path)
+        [walk(path) for path in paths]
 
         config = {}
         for type_, qualifier, profile in dependency.implementations:
