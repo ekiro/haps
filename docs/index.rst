@@ -20,7 +20,7 @@ Look how easy it is to use:
 
 
     class MyApp:
-        db: IDatabase = Inject()  # dependency as property
+        db: IDatabase = Inject()  # dependency as a property
 
         @inject  # or passed to the constructor
         def __init__(self, user_service: IUserService) -> None:
@@ -39,12 +39,12 @@ Features
 - IoC container
 - No XML/JSON/YAML - pure python configuration
 - No dependencies
-- Based on Python 3.6+ annotation system
+- Based on the Python 3.6+ annotation system
 
 Installation
 ------------
 
-Install chaps by running:
+Install *chaps* by running:
 
 .. code::
 
