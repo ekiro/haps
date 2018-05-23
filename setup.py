@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='chaps',
-    version='0.5.1',
+    version='0.5.2',
     packages=find_packages(),
     url='https://github.com/ekiro/chaps',
     license='MIT License',
