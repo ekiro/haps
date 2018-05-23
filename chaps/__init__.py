@@ -264,13 +264,12 @@ def dependency(cls=None, qualifier: str = None, profile: str = None):
         cls: implementation class (required)
         qualifier: required if there's another implementation registered
     """
-
     def __inner(cls_):
         assert cls_ is not None
         dependency.implementations.append((cls_, qualifier, profile))
         return cls_
 
-    if qualifier is None:
+    if cls:
         return __inner(cls)
     else:
         return __inner

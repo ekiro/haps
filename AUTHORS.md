@@ -1,0 +1,2 @@
+- Piotr Karkut [ekiro](http://github.com/ekiro)
+- Tomasz Wąsiński [wasinski](http://github.com/wasinski)
