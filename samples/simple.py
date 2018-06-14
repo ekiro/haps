@@ -1,9 +1,21 @@
-from chaps import SINGLETON_SCOPE, Container, inject, scope
+from chaps import SINGLETON_SCOPE, Container, Egg, inject, scope
 
 
-class CoffeeMaker(object):
+class HeaterInterface:
+    pass
+
+
+class PumpInterface:
+    pass
+
+
+class ExtraPumpInterface(PumpInterface):
+    pass
+
+
+class CoffeeMaker:
     @inject
-    def __init__(self, heater, pump):
+    def __init__(self, heater: HeaterInterface, pump: PumpInterface):
         self.heater = heater
         self.pump = pump
 
@@ -11,9 +23,9 @@ class CoffeeMaker(object):
         return "heater: %r\npump: %r" % (self.heater, self.pump)
 
 
-class Heater(object):
+class Heater:
     @inject
-    def __init__(self, extra_pump):
+    def __init__(self, extra_pump: ExtraPumpInterface):
         self.extra_pump = extra_pump
 
     def __repr__(self):
@@ -21,9 +33,9 @@ class Heater(object):
             id(self), self.extra_pump)
 
 
-class Pump(object):
+class Pump:
     @inject
-    def __init__(self, heater):
+    def __init__(self, heater: HeaterInterface):
         self.heater = heater
 
     def __repr__(self):
@@ -31,16 +43,16 @@ class Pump(object):
 
 
 @scope(SINGLETON_SCOPE)  # Only one instance is managed for whole application
-class ExtraPump(object):
+class ExtraPump:
     def __repr__(self):
         return '<ExtraPump id=%s>' % (id(self),)
 
 
-Container.configure({
-    'heater': Heater,
-    'pump': Pump,
-    'extra_pump': ExtraPump
-})
+Container.configure([
+    Egg(HeaterInterface, HeaterInterface, None, Heater),
+    Egg(PumpInterface, PumpInterface, None, Pump),
+    Egg(ExtraPumpInterface, ExtraPumpInterface, None, ExtraPump),
+])
 
 if __name__ == '__main__':
     print(CoffeeMaker().make_coffee())

@@ -13,7 +13,6 @@ class CoffeeMaker:
         return "heater: %r\npump: %r" % (self.heater, self.pump)
 
 
-Container.autodiscover('samples.autodiscover.services')
-
 if __name__ == '__main__':
+    Container.autodiscover('samples.autodiscover.services')
     print(CoffeeMaker().make_coffee())

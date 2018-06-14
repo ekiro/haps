@@ -5,7 +5,7 @@ import chaps
 
 @pytest.fixture(scope='session')
 def some_class():
-    class SomeClass(object):
+    class SomeClass:
         def fun(self):
             return id(self)
 
@@ -14,7 +14,7 @@ def some_class():
 
 @pytest.fixture(scope='session')
 def some_class2():
-    class SomeClass2(object):
+    class SomeClass2:
         def fun(self):
             return id(self)
 

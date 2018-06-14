@@ -1,4 +1,4 @@
-from chaps import SINGLETON_SCOPE, Container, Inject, scope
+from chaps import SINGLETON_SCOPE, Container, Egg, Inject, scope
 
 
 class HeaterInterface:
@@ -13,7 +13,7 @@ class ExtraPumpInterface(PumpInterface):
     pass
 
 
-class CoffeeMaker(object):
+class CoffeeMaker:
     heater: HeaterInterface = Inject()
     pump: PumpInterface = Inject()
 
@@ -42,11 +42,11 @@ class ExtraPump(ExtraPumpInterface):
         return '<ExtraPump id=%s>' % (id(self),)
 
 
-Container.configure({
-    HeaterInterface: Heater,
-    PumpInterface: Pump,
-    ExtraPumpInterface: ExtraPump
-})
+Container.configure([
+    Egg(HeaterInterface, HeaterInterface, None, Heater),
+    Egg(PumpInterface, PumpInterface, None, Pump),
+    Egg(ExtraPumpInterface, ExtraPumpInterface, None, ExtraPump),
+])
 
 if __name__ == '__main__':
     print(CoffeeMaker().make_coffee())
