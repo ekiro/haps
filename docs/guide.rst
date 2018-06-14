@@ -268,7 +268,7 @@ run our application:
                 print(f'User {username} does not exists!')
 
 
-    IoC.autodiscover('user_module.core')
+    IoC.autodiscover(['user_module.core'])
 
     if __name__ == '__main__':
         um = UserModule()
@@ -300,11 +300,3 @@ Running our application should give following output:
     User Kiro deleted!
     User Kiro does not exists!
     User John already exists!
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

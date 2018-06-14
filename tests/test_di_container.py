@@ -4,7 +4,7 @@ import pytest
 
 import chaps
 from chaps import exceptions
-from chaps.scope.instance import InstanceScope
+from chaps.scopes.instance import InstanceScope
 
 
 @pytest.fixture
@@ -52,7 +52,7 @@ def test_inject_class(some_class):
         chaps.Egg(some_class, some_class, None, some_class)
     ])
 
-    class AnotherClass(object):
+    class AnotherClass:
         @chaps.inject
         def __init__(self, some_class_instance: some_class):
             self.some_class_instance = some_class_instance
@@ -64,14 +64,14 @@ def test_inject_class(some_class):
 
 def test_not_existing_scope():
     @chaps.scope('custom')
-    class CustomScopedCls(object):
+    class CustomScopedCls:
         pass
 
     chaps.Container.configure([
         chaps.Egg(CustomScopedCls, CustomScopedCls, None, CustomScopedCls)
     ])
 
-    class AnotherClass(object):
+    class AnotherClass:
         @chaps.inject
         def __init__(self, csc: CustomScopedCls):
             pass
@@ -82,22 +82,22 @@ def test_not_existing_scope():
 
 def test_custom_scope():
     @chaps.scope('custom')
-    class CustomScopedCls(object):
+    class CustomScopedCls:
         pass
 
     class CustomScope(InstanceScope):
         get_object_called = False
 
-        def get_object(self, egg_):
+        def get_object(self, type_):
             CustomScope.get_object_called = True
-            return super(CustomScope, self).get_object(egg_)
+            return super(CustomScope, self).get_object(type_)
 
     chaps.Container.configure([
         chaps.Egg(CustomScopedCls, CustomScopedCls, None, CustomScopedCls)
     ])
     chaps.Container().register_scope('custom', CustomScope)
 
-    class AnotherClass(object):
+    class AnotherClass:
         @chaps.inject
         def __init__(self, csc: CustomScopedCls):
             self.csc = csc
@@ -115,7 +115,7 @@ def test_inject_class_using_property_instance_annotation(some_class):
         chaps.Egg(some_class, some_class, None, NewClass)
     ])
 
-    class AnotherClass(object):
+    class AnotherClass:
         injected_instance: some_class = chaps.Inject()
 
     some_instance = AnotherClass()
@@ -136,7 +136,7 @@ def test_inject_class_using_init_annotation(some_class):
         chaps.Egg(some_class, some_class, None, NewClass)
     ])
 
-    class AnotherClass(object):
+    class AnotherClass:
         @chaps.inject
         def __init__(self, injected_instance: some_class):
             self.injected_instance = injected_instance
@@ -163,7 +163,7 @@ def test_named_configuration_property_injection(some_class):
         chaps.Egg(some_class, some_class, 'extra', NewClass2)
     ])
 
-    class AnotherClass(object):
+    class AnotherClass:
         some_instance: some_class = chaps.Inject()
         some_extra_instance: some_class = chaps.Inject('extra')
 

@@ -13,7 +13,7 @@ class ExtraPumpInterface(PumpInterface):
     pass
 
 
-class CoffeeMaker(object):
+class CoffeeMaker:
     @inject
     def __init__(self, heater: HeaterInterface, pump: PumpInterface):
         self.heater = heater
@@ -23,7 +23,7 @@ class CoffeeMaker(object):
         return "heater: %r\npump: %r" % (self.heater, self.pump)
 
 
-class Heater(object):
+class Heater:
     @inject
     def __init__(self, extra_pump: ExtraPumpInterface):
         self.extra_pump = extra_pump
@@ -33,7 +33,7 @@ class Heater(object):
             id(self), self.extra_pump)
 
 
-class Pump(object):
+class Pump:
     @inject
     def __init__(self, heater: HeaterInterface):
         self.heater = heater
@@ -43,7 +43,7 @@ class Pump(object):
 
 
 @scope(SINGLETON_SCOPE)  # Only one instance is managed for whole application
-class ExtraPump(object):
+class ExtraPump:
     def __repr__(self):
         return '<ExtraPump id=%s>' % (id(self),)
 

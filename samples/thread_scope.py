@@ -1,16 +1,16 @@
 from chaps import Container, Egg, inject, scope
-from chaps.scope.thread import ThreadScope
+from chaps.scopes.thread import ThreadScope
 
 THREAD_SCOPE = 'thread'  # some unique id
 
 
 @scope(THREAD_SCOPE)
-class LocalData(object):
+class LocalData:
     def __repr__(self):
         return '<LocalData id=%s>' % id(self)
 
 
-class Worker(object):
+class Worker:
     @inject
     def __init__(self, local_data: LocalData):
         self.local_data = local_data

@@ -5,33 +5,43 @@ from functools import singledispatch, wraps
 from inspect import Signature
 from threading import RLock
 from types import FunctionType, ModuleType
-from typing import (Any, Callable, Dict, Hashable, List, Optional, Type,
-                    TypeVar, Union)
+from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Union
 
 from chaps.exceptions import (AlreadyConfigured, CallError, ConfigurationError,
                               NotConfigured, UnknownDependency, UnknownScope)
-from chaps.scope import Scope
-from chaps.scope.instance import InstanceScope
-from chaps.scope.singleton import SingletonScope
+from chaps.scopes import Scope
+from chaps.scopes.instance import InstanceScope
+from chaps.scopes.singleton import SingletonScope
 
-INSTANCE_SCOPE = '__instance'  # default scope
+INSTANCE_SCOPE = '__instance'  # default scopes
 SINGLETON_SCOPE = '__singleton'
 
 T = TypeVar("T")
 
 
 class Egg:
+    """
+    Configuration primitive. Can be used to configure *chaps* manually.
+    """
     base_: Optional[Type]
     type_: Type
     qualifier: Optional[str]
     egg: Callable
 
     def __init__(self, base_: Optional[Type], type_: Type,
-                 qualifier: Optional[str], egg: Callable) -> None:
+                 qualifier: Optional[str], egg_: Callable) -> None:
+        """
+        :param base_: `base` of dependency, used for retrieve object
+        :param type_: `type` of dependency (for functions it's a return type)
+        :param qualifier: extra qualifier for dependency. Can be used to\
+            register more than one type for one base.
+        :param egg_: any callable that returns an instance of dependency, can\
+            be class or function
+        """
         self.base_ = base_
         self.type_ = type_
         self.qualifier = qualifier
-        self.egg = egg
+        self.egg = egg_
 
     def __repr__(self):
         return (f'<chaps.container.Egg base_={repr(self.base_)} '
@@ -55,7 +65,7 @@ class Container:
             if cls.__instance is None:
                 class_ = cls if cls.__subclass is None else cls.__subclass
                 cls.__instance = object.__new__(class_)
-                cls.__instance.scopes: Dict[Hashable, Scope] = {}
+                cls.__instance.scopes: Dict[str, Scope] = {}
                 cls.__instance.config: List[Egg] = []
 
             return cls.__instance
@@ -69,6 +79,12 @@ class Container:
     @staticmethod
     def configure(
             config: List[Egg], subclass: 'Container' = None) -> None:
+        """
+        Configure chaps manually, an alternative
+        to :func:`~chaps.Container.autodiscover`
+        :param config: List of configured Eggs
+        :param subclass: Optional Container subclass that should be used
+        """
         with Container._lock:
             if Container.__configured:
                 raise AlreadyConfigured
@@ -88,7 +104,15 @@ class Container:
 
     @classmethod
     def autodiscover(
-            cls, module_paths: List[str], subclass=None) -> None:
+            cls, module_paths: List[str], subclass: 'Container' = None
+    ) -> None:
+        """
+        Load all modules automatically and find bases and eggs.
+
+        :param module_paths: List of paths that should be discovered
+        :param subclass: Optional Container subclass that should be used
+        """
+
         def find_base(bases: set, implementation: Type):
             found = {b for b in bases if issubclass(implementation, b)}
             if not found:
@@ -111,27 +135,38 @@ class Container:
                     results.update(walk(full_name))
             return results
 
-        for module_path in module_paths:
-            walk(module_path)
+        with cls._lock:
+            for module_path in module_paths:
+                walk(module_path)
 
-        config: List[Egg] = []
-        configured = set()
-        for egg_ in egg.factories:
-            base_ = find_base(base.classes, egg_.type_)
-            if (base_, egg_.qualifier) in configured:
-                raise ConfigurationError(
-                    "Ambiguous implementation %s" % repr(base_))
-            egg_.base_ = base_
-            configured.add((base_, egg_.qualifier))
-            config.append(egg_)
+            config: List[Egg] = []
+            configured = set()
+            for egg_ in egg.factories:
+                base_ = find_base(base.classes, egg_.type_)
+                if (base_, egg_.qualifier) in configured:
+                    raise ConfigurationError(
+                        "Ambiguous implementation %s" % repr(base_))
+                egg_.base_ = base_
+                configured.add((base_, egg_.qualifier))
+                config.append(egg_)
 
-        cls.configure(config, subclass=subclass)
+            cls.configure(config, subclass=subclass)
 
-    def _find_egg(self, base_: Type, qualifier: Hashable) -> Optional[Egg]:
+    def _find_egg(self, base_: Type, qualifier: str) -> Optional[Egg]:
         return next((e for e in self.config if
                      e.base_ is base_ and e.qualifier == qualifier), None)
 
-    def get_object(self, base_: Type, qualifier: Hashable = None) -> Any:
+    def get_object(self, base_: Type, qualifier: str = None) -> Any:
+        """
+        Get instance directly from the container.
+
+        If the qualifier is not None, proper method to create/retrieve instance
+        is  used.
+
+        :param base_: `base` of this object
+        :param qualifier: optional qualifier
+        :return: object instance
+        """
         egg_ = self._find_egg(base_, qualifier)
         if egg_ is None:
             raise UnknownDependency(
@@ -142,18 +177,42 @@ class Container:
         try:
             _scope = self.scopes[scope_id]
         except KeyError:
-            raise UnknownScope('Unknown scope with id %s' % scope_id)
+            raise UnknownScope('Unknown scopes with id %s' % scope_id)
         else:
-            return _scope.get_object(egg_.egg)
+            with self._lock:
+                return _scope.get_object(egg_.egg)
 
-    def register_scope(self, name: Hashable, scope_class: Type[Scope]) -> None:
-        if name in self.scopes:
-            raise AlreadyConfigured(f'Scope {name} already registered')
-        self.scopes[name] = scope_class()
+    def register_scope(self, name: str, scope_class: Type[Scope]) -> None:
+        """
+        Register new scopes which should be subclass of `Scope`
+
+        :param name: Name of new scopes
+        :param scope_class: Class of new scopes
+        """
+        with self._lock:
+            if name in self.scopes:
+                raise AlreadyConfigured(f'Scope {name} already registered')
+            self.scopes[name] = scope_class()
 
 
 class Inject:
-    def __init__(self, qualifier: Hashable = None):
+    """
+    A descriptor for injecting dependencies as attributes
+
+    .. code-block:: python
+
+        class SomeClass:
+            my_dep: DepType = Inject()
+
+    .. important::
+
+        Dependency is injected (created/fetched) at the moment of attribute
+        access, not instance of `SomeClass` creation. So, even if you create
+        an instance of `SomeClass`, the instance of `DepType` may never be
+        created.
+    """
+
+    def __init__(self, qualifier: str = None):
         self._qualifier = qualifier
         self._type: Type = None
         self.__prop_name = '__chaps_%s_%s_instance' % ('', id(self))
@@ -177,6 +236,26 @@ class Inject:
 
 
 def inject(fun: Callable) -> Callable:
+    """
+    A decorator for injection dependencies into functions/methods, based
+    on their type annotations.
+
+    .. code-block:: python
+
+        class SomeClass:
+            @inject
+            def __init__(self, my_dep: DepType) -> None:
+                self.my_dep = my_dep
+
+    .. important::
+
+        On the opposite to :class:`~chaps.Inject`, dependency is injected
+        at the moment of method invocation. In case of decorating `__init__`,
+        dependency is injected when `SomeClass` instance is created.
+
+    :param fun: callable with annotated parameters
+    :return: decorated callable
+    """
     sig = inspect.signature(fun)
 
     injectables: Dict[str, Any] = {}
@@ -202,6 +281,12 @@ def inject(fun: Callable) -> Callable:
 
 
 def base(cls: T) -> T:
+    """
+    A class decorator that marks class as a base type.
+
+    :param cls:
+    :return:
+    """
     base.classes.add(cls)
     return cls
 
@@ -211,7 +296,31 @@ base.classes = set()
 Factory_T = Callable[..., T]
 
 
-def egg(qualifier: Hashable = None):
+def egg(qualifier: str = None):
+    """
+    A function that returns a decorator that marks class or function as a
+    source of `base`.
+
+    If a class is decorated, it should inherit after from `base` type.
+
+    If a function is decorated, it declared return type should inherit after
+    some `base` type, or it should be the `base` type.
+
+    .. code-block:: python
+
+        @egg()
+        class DepImpl(DepType):
+            pass
+
+        @egg(qualifier='special_dep')
+        def dep_factory() -> DepType:
+            return SomeDepImpl()
+
+    :param qualifier: extra qualifier for dependency. Can be used to\
+            register more than one type for one base.
+    :return: decorator
+    """
+
     @singledispatch
     def egg_dec(_: Any) -> T:
         raise AttributeError('Wrong egg obj type')
@@ -225,7 +334,7 @@ def egg(qualifier: Hashable = None):
         egg.factories.append(Egg(
             type_=spec.return_annotation,
             qualifier=qualifier,
-            egg=obj,
+            egg_=obj,
             base_=None,
         ))
         return obj
@@ -235,7 +344,7 @@ def egg(qualifier: Hashable = None):
         egg.factories.append(Egg(
             type_=obj,
             qualifier=qualifier,
-            egg=obj,
+            egg_=obj,
             base_=None
         ))
         return obj
@@ -246,7 +355,21 @@ def egg(qualifier: Hashable = None):
 egg.factories: List[Egg] = []
 
 
-def scope(scope_type: Hashable) -> Callable:
+def scope(scope_type: str) -> Callable:
+    """
+    A function that returns decorator that set scopes to some class/function
+
+    .. code-block:: python
+
+        @egg()
+        @scopes(SINGLETON_SCOPE)
+        class DepImpl:
+            pass
+
+    :param scope_type: Which scope should be used
+    :return:
+    """
+
     def dec(egg_: T) -> T:
         egg_.__chaps_custom_scope = scope_type
         return egg_

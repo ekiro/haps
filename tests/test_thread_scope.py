@@ -5,7 +5,7 @@ except ImportError:
 
 import threading
 
-from chaps.scope.thread import ThreadScope
+from chaps.scopes.thread import ThreadScope
 
 
 def test_get_object(some_class):

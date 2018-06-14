@@ -6,7 +6,7 @@
 Welcome to chaps documentation!
 =================================
 
-*Chaps* is a simple DI library, with IoC container included. It is written in
+**Chaps** *[χaps]* is a simple DI library, with IoC container included. It is written in
 pure Python with no external dependencies.
 
 Look how easy it is to use:
@@ -74,6 +74,9 @@ The project is licensed under the MIT license.
    :caption: Contents:
 
    guide
+   api
+   scopes
+   exceptions
 
 
 

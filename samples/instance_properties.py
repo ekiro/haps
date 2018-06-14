@@ -13,7 +13,7 @@ class ExtraPumpInterface(PumpInterface):
     pass
 
 
-class CoffeeMaker(object):
+class CoffeeMaker:
     heater: HeaterInterface = Inject()
     pump: PumpInterface = Inject()
 
