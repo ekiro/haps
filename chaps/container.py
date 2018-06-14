@@ -88,7 +88,7 @@ class Container:
 
     @classmethod
     def autodiscover(
-            cls, module_path: str, subclass=None) -> None:
+            cls, module_paths: List[str], subclass=None) -> None:
         def find_base(bases: set, implementation: Type):
             found = {b for b in bases if issubclass(implementation, b)}
             if not found:
@@ -111,7 +111,8 @@ class Container:
                     results.update(walk(full_name))
             return results
 
-        walk(module_path)
+        for module_path in module_paths:
+            walk(module_path)
 
         config: List[Egg] = []
         configured = set()

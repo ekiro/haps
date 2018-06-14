@@ -179,7 +179,7 @@ def test_named_configuration_property_injection(some_class):
 
 def test_autodiscovery():
     from samples.autodiscover.sample import (CoffeeMaker, IPump, IHeater)
-    chaps.Container.autodiscover('samples.autodiscover.services')
+    chaps.Container.autodiscover(['samples.autodiscover.services'])
 
     cm = CoffeeMaker()
     assert isinstance(cm.pump, IPump)
