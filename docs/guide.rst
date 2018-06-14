@@ -4,7 +4,7 @@ QuickStart
 =================================
 
 Here's a simple tutorial on how to write your first application using *chaps*.
-Assuming you have already created an environment with python 3.6+ and installed,
+Assuming you have already created an environment with python 3.6+ and *chaps* installed,
 you can start writing some juicy code.
 
 
