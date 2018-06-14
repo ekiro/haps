@@ -153,9 +153,9 @@ creating and binding the proper instance.
     .. code-block:: python
 
         us = UserService()
-        assert us.mailer == us.mailer  # it's always true
+        assert us.mailer is us.mailer  # it's always true
         # but
-        assert us.mailer == UserService().mailer  # not necessarily
+        assert us.mailer is UserService().mailer  # not necessarily
         # (but it can, as you will see later)
 
 
