@@ -52,6 +52,8 @@ Injection
 Dependencies
 ---------------------------------
 
+.. autofunction:: chaps.base
+
 .. autofunction:: chaps.egg
 
 .. autofunction:: chaps.scope

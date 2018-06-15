@@ -82,6 +82,7 @@ class Container:
         """
         Configure chaps manually, an alternative
         to :func:`~chaps.Container.autodiscover`
+
         :param config: List of configured Eggs
         :param subclass: Optional Container subclass that should be used
         """
@@ -197,7 +198,7 @@ class Container:
 
 class Inject:
     """
-    A descriptor for injecting dependencies as attributes
+    A descriptor for injecting dependencies as properties
 
     .. code-block:: python
 
