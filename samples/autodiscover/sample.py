@@ -1,4 +1,4 @@
-from chaps import Container, Inject, inject
+from haps import Container, Inject, inject
 from samples.autodiscover.services.bases import IHeater, IPump
 
 

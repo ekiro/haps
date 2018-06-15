@@ -1,19 +1,19 @@
-.. chaps documentation master file, created by
+.. haps documentation master file, created by
    sphinx-quickstart on Thu Apr  5 18:13:43 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to chaps documentation!
+Welcome to haps documentation!
 =================================
 
-**Chaps** *[χaps]* is a simple DI library, with IoC container included. It is written in
+**Haps** *[χaps]* is a simple DI library, with IoC container included. It is written in
 pure Python with no external dependencies.
 
 Look how easy it is to use:
 
 .. code-block:: python
 
-    from chaps import Container as IoC, Inject, inject
+    from haps import Container as IoC, Inject, inject
 
     # import interfaces
     from my_application.core import IDatabase, IUserService
@@ -44,17 +44,17 @@ Features
 Installation
 ------------
 
-Install *chaps* by running:
+Install *haps* by running:
 
 .. code::
 
-    pip install chaps
+    pip install haps
 
 Contribute
 ----------
 
-- Issue Tracker: github.com/ekiro/chaps/issues
-- Source Code: github.com/ekiro/chaps
+- Issue Tracker: github.com/ekiro/haps/issues
+- Source Code: github.com/ekiro/haps
 
 Support
 -------

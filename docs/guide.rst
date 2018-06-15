@@ -3,15 +3,15 @@
 QuickStart
 =================================
 
-Here's a simple tutorial on how to write your first application using *chaps*.
-Assuming you have already created an environment with python 3.6+ and *chaps* installed,
+Here's a simple tutorial on how to write your first application using *haps*.
+Assuming you have already created an environment with python 3.6+ and *haps* installed,
 you can start writing some juicy code.
 
 
 Application layout
 ---------------------------------
 
-Since *chaps* doesn't enforce any project/code design (you can use it
+Since *haps* doesn't enforce any project/code design (you can use it
 even as an addition to your existing Django or flask application!), this is just an
 example layout. You are going to create a simple user registration system.
 
@@ -41,7 +41,7 @@ readable:
 .. code-block:: python
 
     # quickstart/user_module/core/interfaces.py
-    from chaps import base
+    from haps import base
 
 
     @base
@@ -73,13 +73,13 @@ There are three interfaces:
 - :code:`IDatabase`: Low-level data repository
 - :code:`IMailer`: One-method interface for mailing integration
 
-You need to tell *chaps* about your interfaces by using :code:`@base` class decorator,
+You need to tell *haps* about your interfaces by using :code:`@base` class decorator,
 so it can resolve dependencies correctly.
 
 
 .. note::
     Be aware that you don't have to create a fully-featured interface, instead
-    you can just define a base type, that's enough for *chaps*:
+    you can just define a base type, that's enough for *haps*:
 
     .. code-block:: python
 
@@ -99,7 +99,7 @@ we will start with UserService and Mailer implementation.
 .. code-block:: python
 
     # quickstart/user_module/core/implementations/others.py
-    from chaps import egg, Inject
+    from haps import egg, Inject
 
     from user_module.core.interfaces import IDatabase, IMailer, IUserService
 
@@ -131,16 +131,16 @@ we will start with UserService and Mailer implementation.
 
 There are two classes, and the first one is quite simple, it inherits from
 :code:`IMailer` and implements its only method :code:`send`. The only new
-thing here is the :code:`@egg()` decorator. You can use it to tell *chaps* about any
+thing here is the :code:`@egg()` decorator. You can use it to tell *haps* about any
 callable (a class is also a callable) that returns the implementation of a base type.
-Now you can probably guess how *chaps* can resolve right dependencies - it looks into
+Now you can probably guess how *haps* can resolve right dependencies - it looks into
 inheritance chain.
 
 The :code:`UserService` implementation is a way more interesting. Besides the parts
 we've already seen in the :code:`DummyMailer`  implementation, it uses the
 :code:`Inject` `descriptor <https://docs.python.org/3.6/howto/descriptor.html>`_ to provide
 dependencies. Yes, it's that simple. You only need to define class-level field :code:`Inject`
-with proper annotation, and *chaps* will take care of everything else. It means
+with proper annotation, and *haps* will take care of everything else. It means
 creating and binding the proper instance.
 
 .. warning::
@@ -160,7 +160,7 @@ creating and binding the proper instance.
 
 
 Now let's move to our repository. We need to implement some data storage for our
-project. For now, it'll be in-memory storage, but, thanks to chaps, you can
+project. For now, it'll be in-memory storage, but, thanks to haps, you can
 quickly switch between many implementations. Creation of the database repository
 may be more complicated, so we'll use a factory function.
 
@@ -169,7 +169,7 @@ may be more complicated, so we'll use a factory function.
     # quickstart/user_module/core/implementations/db.py
     from collections import defaultdict
 
-    from chaps import egg, scope, SINGLETON_SCOPE
+    from haps import egg, scope, SINGLETON_SCOPE
 
     from user_module.core.interfaces import IDatabase
 
@@ -211,12 +211,12 @@ However, notice there's no :code:`@egg` decorator on this implementation. Instea
 we've created a function decorated with it which have :code:`IDatabase`
 declared as the return type.
 
-In this case, when injecting, chaps calls :code:`database_factory` function
+In this case, when injecting, haps calls :code:`database_factory` function
 and injects the result.
 
 
 .. warning::
-    Be aware that *chaps* by design WILL NOT validate function output in any way.
+    Be aware that *haps* by design WILL NOT validate function output in any way.
     So if your function returns a type that's not compatible with declared one,
     it could lead to hard to catch errors.
 
@@ -227,11 +227,11 @@ Scope
 As you can see in the previous file, :code:`database_factory` function
 is also decorated with :code:`scope` decorator.
 
-A scope in *chaps* determines object life-cycle. The default scope is :code:`INSTANCE_SCOPE`,
+A scope in *haps* determines object life-cycle. The default scope is :code:`INSTANCE_SCOPE`,
 and you don't have to declare it explicitly. There are also two scopes that ships with
-chaps, :code:`SINGLETON_SCOPE`, and :code:`THREAD_SCOPE`. You can also create your own
+haps, :code:`SINGLETON_SCOPE`, and :code:`THREAD_SCOPE`. You can also create your own
 scopes. You can read about scopes in another chapter, but for the clarity:
-:code:`SINGLETON_SCOPE` means that *chaps* creates only one instance, and injects
+:code:`SINGLETON_SCOPE` means that *haps* creates only one instance, and injects
 the same object every time. On the other hand, dependencies with
 :code:`INSTANCE_SCOPE` (which is default), are instantiated on every injection.
 
@@ -245,7 +245,7 @@ run our application:
 .. code-block:: python
 
     # quickstart/user_module/app.py
-    from chaps import Container as IoC, inject
+    from haps import Container as IoC, inject
 
     from user_module.core.interfaces import IUserService
 
@@ -282,10 +282,10 @@ run our application:
 
 
 The main class :code:`UserModule` takes :code:`IUserService` in the constructor,
-and thanks to the :code:`@inject` decorator, chaps will create and
+and thanks to the :code:`@inject` decorator, haps will create and
 pass :code:`UserService` instance to it.
 
-After that, we have to call :code:`autodiscover` method from *chaps*, which
+After that, we have to call :code:`autodiscover` method from *haps*, which
 scans all modules under given path and configures all dependencies.
 
 Running our application should give following output:

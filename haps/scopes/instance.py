@@ -1,6 +1,6 @@
 from typing import Any, Callable
 
-from chaps.scopes import Scope
+from haps.scopes import Scope
 
 
 class InstanceScope(Scope):

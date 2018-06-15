@@ -19,7 +19,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'chaps'
+project = 'haps'
 copyright = '2018, Piotr Karkut'
 author = 'Piotr Karkut'
 
@@ -103,7 +103,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'chapsdoc'
+htmlhelp_basename = 'hapsdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -130,7 +130,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'chaps.tex', 'chaps Documentation',
+    (master_doc, 'haps.tex', 'haps Documentation',
      'Piotr Karkut', 'manual'),
 ]
 
@@ -140,7 +140,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'chaps', 'chaps Documentation',
+    (master_doc, 'haps', 'haps Documentation',
      [author], 1)
 ]
 
@@ -151,8 +151,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'chaps', 'chaps Documentation',
-     author, 'chaps', 'One line description of project.',
+    (master_doc, 'haps', 'haps Documentation',
+     author, 'haps', 'One line description of project.',
      'Miscellaneous'),
 ]
 

@@ -1,6 +1,6 @@
 import pytest
 
-import chaps
+import haps
 
 
 @pytest.fixture(scope='session')
@@ -23,4 +23,4 @@ def some_class2():
 
 @pytest.fixture(scope='function', autouse=True)
 def reset_containter(request):
-    request.addfinalizer(chaps.Container._reset)
+    request.addfinalizer(haps.Container._reset)

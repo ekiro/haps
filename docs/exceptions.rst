@@ -3,14 +3,14 @@
 Exceptions
 =================================
 
-.. autoexception:: chaps.exceptions.AlreadyConfigured
+.. autoexception:: haps.exceptions.AlreadyConfigured
 
-.. autoexception:: chaps.exceptions.ConfigurationError
+.. autoexception:: haps.exceptions.ConfigurationError
 
-.. autoexception:: chaps.exceptions.NotConfigured
+.. autoexception:: haps.exceptions.NotConfigured
 
-.. autoexception:: chaps.exceptions.UnknownDependency
+.. autoexception:: haps.exceptions.UnknownDependency
 
-.. autoexception:: chaps.exceptions.UnknownScope
+.. autoexception:: haps.exceptions.UnknownScope
 
-.. autoexception:: chaps.exceptions.CallError
+.. autoexception:: haps.exceptions.CallError

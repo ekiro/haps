@@ -2,16 +2,16 @@ import json
 
 import pytest
 
-import chaps
-from chaps import exceptions
-from chaps.scopes.instance import InstanceScope
+import haps
+from haps import exceptions
+from haps.scopes.instance import InstanceScope
 
 
 @pytest.fixture
 def cfg_file(tmpdir):
     data = {
         'deps': {
-            'container': 'chaps.Container'
+            'container': 'haps.Container'
         }
     }
 
@@ -21,39 +21,39 @@ def cfg_file(tmpdir):
 
 
 def test_configure():
-    chaps.Container.configure([])
+    haps.Container.configure([])
 
-    assert chaps.Container()
+    assert haps.Container()
 
 
 def test_already_configured():
-    chaps.Container.configure([])
+    haps.Container.configure([])
 
     with pytest.raises(exceptions.AlreadyConfigured):
-        chaps.Container.configure([])
+        haps.Container.configure([])
 
 
 def test_not_configured():
     with pytest.raises(exceptions.NotConfigured):
-        chaps.Container()
+        haps.Container()
 
 
 def test_configure_class_and_get_object(some_class):
-    chaps.Container.configure([
-        chaps.Egg(some_class, some_class, None, some_class)
+    haps.Container.configure([
+        haps.Egg(some_class, some_class, None, some_class)
     ])
 
-    some_instance = chaps.Container().get_object(some_class)
+    some_instance = haps.Container().get_object(some_class)
     assert isinstance(some_instance, some_class)
 
 
 def test_inject_class(some_class):
-    chaps.Container.configure([
-        chaps.Egg(some_class, some_class, None, some_class)
+    haps.Container.configure([
+        haps.Egg(some_class, some_class, None, some_class)
     ])
 
     class AnotherClass:
-        @chaps.inject
+        @haps.inject
         def __init__(self, some_class_instance: some_class):
             self.some_class_instance = some_class_instance
 
@@ -63,16 +63,16 @@ def test_inject_class(some_class):
 
 
 def test_not_existing_scope():
-    @chaps.scope('custom')
+    @haps.scope('custom')
     class CustomScopedCls:
         pass
 
-    chaps.Container.configure([
-        chaps.Egg(CustomScopedCls, CustomScopedCls, None, CustomScopedCls)
+    haps.Container.configure([
+        haps.Egg(CustomScopedCls, CustomScopedCls, None, CustomScopedCls)
     ])
 
     class AnotherClass:
-        @chaps.inject
+        @haps.inject
         def __init__(self, csc: CustomScopedCls):
             pass
 
@@ -81,7 +81,7 @@ def test_not_existing_scope():
 
 
 def test_custom_scope():
-    @chaps.scope('custom')
+    @haps.scope('custom')
     class CustomScopedCls:
         pass
 
@@ -92,13 +92,13 @@ def test_custom_scope():
             CustomScope.get_object_called = True
             return super(CustomScope, self).get_object(type_)
 
-    chaps.Container.configure([
-        chaps.Egg(CustomScopedCls, CustomScopedCls, None, CustomScopedCls)
+    haps.Container.configure([
+        haps.Egg(CustomScopedCls, CustomScopedCls, None, CustomScopedCls)
     ])
-    chaps.Container().register_scope('custom', CustomScope)
+    haps.Container().register_scope('custom', CustomScope)
 
     class AnotherClass:
-        @chaps.inject
+        @haps.inject
         def __init__(self, csc: CustomScopedCls):
             self.csc = csc
 
@@ -111,12 +111,12 @@ def test_inject_class_using_property_instance_annotation(some_class):
     class NewClass(some_class):
         pass
 
-    chaps.Container.configure([
-        chaps.Egg(some_class, some_class, None, NewClass)
+    haps.Container.configure([
+        haps.Egg(some_class, some_class, None, NewClass)
     ])
 
     class AnotherClass:
-        injected_instance: some_class = chaps.Inject()
+        injected_instance: some_class = haps.Inject()
 
     some_instance = AnotherClass()
 
@@ -132,12 +132,12 @@ def test_inject_class_using_init_annotation(some_class):
     class NewClass(some_class):
         pass
 
-    chaps.Container.configure([
-        chaps.Egg(some_class, some_class, None, NewClass)
+    haps.Container.configure([
+        haps.Egg(some_class, some_class, None, NewClass)
     ])
 
     class AnotherClass:
-        @chaps.inject
+        @haps.inject
         def __init__(self, injected_instance: some_class):
             self.injected_instance = injected_instance
 
@@ -158,14 +158,14 @@ def test_named_configuration_property_injection(some_class):
     class NewClass2(some_class):
         pass
 
-    chaps.Container.configure([
-        chaps.Egg(some_class, some_class, None, NewClass),
-        chaps.Egg(some_class, some_class, 'extra', NewClass2)
+    haps.Container.configure([
+        haps.Egg(some_class, some_class, None, NewClass),
+        haps.Egg(some_class, some_class, 'extra', NewClass2)
     ])
 
     class AnotherClass:
-        some_instance: some_class = chaps.Inject()
-        some_extra_instance: some_class = chaps.Inject('extra')
+        some_instance: some_class = haps.Inject()
+        some_extra_instance: some_class = haps.Inject('extra')
 
     some_instance = AnotherClass()
 
@@ -179,7 +179,7 @@ def test_named_configuration_property_injection(some_class):
 
 def test_autodiscovery():
     from samples.autodiscover.sample import (CoffeeMaker, IPump, IHeater)
-    chaps.Container.autodiscover(['samples.autodiscover.services'])
+    haps.Container.autodiscover(['samples.autodiscover.services'])
 
     cm = CoffeeMaker()
     assert isinstance(cm.pump, IPump)

@@ -1,4 +1,4 @@
-from chaps.scopes.singleton import SingletonScope
+from haps.scopes.singleton import SingletonScope
 
 
 def test_get_object(some_class):

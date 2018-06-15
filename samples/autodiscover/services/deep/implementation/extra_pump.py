@@ -1,4 +1,4 @@
-from chaps import SINGLETON_SCOPE, Inject, egg, inject, scope
+from haps import SINGLETON_SCOPE, Inject, egg, inject, scope
 from samples.autodiscover.services.bases import IHeater, IPump
 
 

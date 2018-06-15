@@ -1,5 +1,5 @@
-from chaps import Container, Egg, inject, scope
-from chaps.scopes.thread import ThreadScope
+from haps import Container, Egg, inject, scope
+from haps.scopes.thread import ThreadScope
 
 THREAD_SCOPE = 'thread'  # some unique id
 

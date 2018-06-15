@@ -1,4 +1,4 @@
-from chaps import Inject, egg
+from haps import Inject, egg
 from samples.autodiscover.services.bases import IHeater, IPump
 
 

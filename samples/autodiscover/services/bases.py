@@ -1,4 +1,4 @@
-from chaps import base
+from haps import base
 
 
 @base

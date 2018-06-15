@@ -1,4 +1,4 @@
-from chaps import SINGLETON_SCOPE, Container, Egg, inject, scope
+from haps import SINGLETON_SCOPE, Container, Egg, inject, scope
 
 
 class HeaterInterface:

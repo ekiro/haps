@@ -7,11 +7,11 @@ from threading import RLock
 from types import FunctionType, ModuleType
 from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Union
 
-from chaps.exceptions import (AlreadyConfigured, CallError, ConfigurationError,
-                              NotConfigured, UnknownDependency, UnknownScope)
-from chaps.scopes import Scope
-from chaps.scopes.instance import InstanceScope
-from chaps.scopes.singleton import SingletonScope
+from haps.exceptions import (AlreadyConfigured, CallError, ConfigurationError,
+                             NotConfigured, UnknownDependency, UnknownScope)
+from haps.scopes import Scope
+from haps.scopes.instance import InstanceScope
+from haps.scopes.singleton import SingletonScope
 
 INSTANCE_SCOPE = '__instance'  # default scopes
 SINGLETON_SCOPE = '__singleton'
@@ -21,7 +21,7 @@ T = TypeVar("T")
 
 class Egg:
     """
-    Configuration primitive. Can be used to configure *chaps* manually.
+    Configuration primitive. Can be used to configure *haps* manually.
     """
     base_: Optional[Type]
     type_: Type
@@ -44,7 +44,7 @@ class Egg:
         self.egg = egg_
 
     def __repr__(self):
-        return (f'<chaps.container.Egg base_={repr(self.base_)} '
+        return (f'<haps.container.Egg base_={repr(self.base_)} '
                 f'type_={repr(self.type_)} qualifier={repr(self.qualifier)} '
                 f'egg={repr(self.egg)}>')
 
@@ -80,8 +80,8 @@ class Container:
     def configure(
             config: List[Egg], subclass: 'Container' = None) -> None:
         """
-        Configure chaps manually, an alternative
-        to :func:`~chaps.Container.autodiscover`
+        Configure haps manually, an alternative
+        to :func:`~haps.Container.autodiscover`
 
         :param config: List of configured Eggs
         :param subclass: Optional Container subclass that should be used
@@ -173,7 +173,7 @@ class Container:
             raise UnknownDependency(
                 'Unknown dependency %s' % base_)
 
-        scope_id = getattr(egg_.egg, '__chaps_custom_scope', INSTANCE_SCOPE)
+        scope_id = getattr(egg_.egg, '__haps_custom_scope', INSTANCE_SCOPE)
 
         try:
             _scope = self.scopes[scope_id]
@@ -216,7 +216,7 @@ class Inject:
     def __init__(self, qualifier: str = None):
         self._qualifier = qualifier
         self._type: Type = None
-        self.__prop_name = '__chaps_%s_%s_instance' % ('', id(self))
+        self.__prop_name = '__haps_%s_%s_instance' % ('', id(self))
 
     def __get__(self, instance: Any, owner: Type) -> Any:
         if instance is None:
@@ -250,7 +250,7 @@ def inject(fun: Callable) -> Callable:
 
     .. important::
 
-        On the opposite to :class:`~chaps.Inject`, dependency is injected
+        On the opposite to :class:`~haps.Inject`, dependency is injected
         at the moment of method invocation. In case of decorating `__init__`,
         dependency is injected when `SomeClass` instance is created.
 
@@ -285,8 +285,8 @@ def base(cls: T) -> T:
     """
     A class decorator that marks class as a base type.
 
-    :param cls:
-    :return:
+    :param cls: Some base type
+    :return: Not modified `cls`
     """
     base.classes.add(cls)
     return cls
@@ -372,7 +372,7 @@ def scope(scope_type: str) -> Callable:
     """
 
     def dec(egg_: T) -> T:
-        egg_.__chaps_custom_scope = scope_type
+        egg_.__haps_custom_scope = scope_type
         return egg_
 
     return dec

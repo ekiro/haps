@@ -7,53 +7,53 @@ API
 Container
 ---------------------------------
 
-.. autoclass:: chaps.Container
+.. autoclass:: haps.Container
 
-Container is a heart of *chaps*. For now, its implemented as a singleton
+Container is a heart of *haps*. For now, its implemented as a singleton
 that can only be used after one-time configuration.
 
 .. code-block:: python
 
-    from chaps import Container
+    from haps import Container
 
     Container.autodiscover(['my.package'])  # configuration, once in the app lifetime
     Container().some_method()  # Call method on the instance
 
 That means, you can create instances of classes that use injections, only after
-*chaps* is properly configured.
+*haps* is properly configured.
 
 
-.. automethod:: chaps.Container.autodiscover
+.. automethod:: haps.Container.autodiscover
 
-.. automethod:: chaps.Container.configure
+.. automethod:: haps.Container.configure
 
-.. automethod:: chaps.Container.get_object
+.. automethod:: haps.Container.get_object
 
-.. automethod:: chaps.Container.register_scope
+.. automethod:: haps.Container.register_scope
 
 
 Egg
 ---------------------------------
 
 
-.. autoclass:: chaps.Egg
+.. autoclass:: haps.Egg
 
-.. automethod:: chaps.Egg.__init__
+.. automethod:: haps.Egg.__init__
 
 
 Injection
 ---------------------------------
 
-.. autoclass:: chaps.Inject
+.. autoclass:: haps.Inject
 
-.. autofunction:: chaps.inject
+.. autofunction:: haps.inject
 
 
 Dependencies
 ---------------------------------
 
-.. autofunction:: chaps.base
+.. autofunction:: haps.base
 
-.. autofunction:: chaps.egg
+.. autofunction:: haps.egg
 
-.. autofunction:: chaps.scope
+.. autofunction:: haps.scope

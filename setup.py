@@ -1,10 +1,10 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='chaps',
+    name='haps',
     version='1.0.0',
     packages=find_packages(),
-    url='https://github.com/ekiro/chaps',
+    url='https://github.com/ekiro/haps',
     license='MIT License',
     author='Piotr Karkut',
     author_email='karkucik@gmail.com',

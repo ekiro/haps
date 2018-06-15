@@ -1,4 +1,4 @@
-from chaps.scopes.instance import InstanceScope
+from haps.scopes.instance import InstanceScope
 
 
 def test_get_object(some_class):

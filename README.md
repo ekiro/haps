@@ -1,10 +1,10 @@
-# chaps [![PyPI](https://img.shields.io/pypi/pyversions/chaps.svg)](https://pypi.python.org/pypi/chaps/) [![Build Status](https://travis-ci.org/ekiro/chaps.svg?branch=master)](https://travis-ci.org/ekiro/chaps)
-Chaps [χaps] is a simple DI library, with IoC container included. It is written in pure Python with no external dependencies.
+# haps [![PyPI](https://img.shields.io/pypi/pyversions/haps.svg)](https://pypi.python.org/pypi/haps/) [![Build Status](https://travis-ci.org/ekiro/haps.svg?branch=master)](https://travis-ci.org/ekiro/haps)
+Haps [χaps] is a simple DI library, with IoC container included. It is written in pure Python with no external dependencies.
 
 Look how easy it is to use:
 
 ```python
-from chaps import Container as IoC, Inject, inject
+from haps import Container as IoC, Inject, inject
 
 # import interfaces
 from my_application.core import IDatabase, IUserService
@@ -27,15 +27,15 @@ if __name__ == '__main__':
 
 # Installation
 
-    pip install chaps
+    pip install haps
 
 # Documentation
 
-See https://chaps.readthedocs.io/en/latest/
+See https://haps.readthedocs.io/en/latest/
 
 # Usage examples
 
-See https://github.com/ekiro/chaps/tree/master/samples
+See https://github.com/ekiro/haps/tree/master/samples
 
 # Testing
 
