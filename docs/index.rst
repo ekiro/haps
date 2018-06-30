@@ -56,6 +56,15 @@ Contribute
 - Issue Tracker: github.com/ekiro/haps/issues
 - Source Code: github.com/ekiro/haps
 
+Changelog
+---------
+
+1.0.4 (2018-06-30)
+.....................
+
+* Add support for python 3.7
+* Fix autodiscover sample
+
 Support
 -------
 

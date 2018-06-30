@@ -1,7 +1,7 @@
 import importlib
 import inspect
 import pkgutil
-from functools import singledispatch, wraps
+from functools import wraps
 from inspect import Signature
 from threading import RLock
 from types import FunctionType, ModuleType
@@ -322,33 +322,29 @@ def egg(qualifier: str = None):
     :return: decorator
     """
 
-    @singledispatch
-    def egg_dec(_: Any) -> T:
-        raise AttributeError('Wrong egg obj type')
-
-    @egg_dec.register(FunctionType)
-    def _f(obj: Factory_T) -> Factory_T:
-        spec = inspect.signature(obj)
-        return_annotation = spec.return_annotation
-        if return_annotation is Signature.empty:
-            raise ConfigurationError('No return type annotation')
-        egg.factories.append(Egg(
-            type_=spec.return_annotation,
-            qualifier=qualifier,
-            egg_=obj,
-            base_=None,
-        ))
-        return obj
-
-    @egg_dec.register(Type)
-    def _o(obj: T) -> T:  # noqa
-        egg.factories.append(Egg(
-            type_=obj,
-            qualifier=qualifier,
-            egg_=obj,
-            base_=None
-        ))
-        return obj
+    def egg_dec(obj: Union[FunctionType, type]) -> T:
+        if isinstance(obj, FunctionType):
+            spec = inspect.signature(obj)
+            return_annotation = spec.return_annotation
+            if return_annotation is Signature.empty:
+                raise ConfigurationError('No return type annotation')
+            egg.factories.append(Egg(
+                type_=spec.return_annotation,
+                qualifier=qualifier,
+                egg_=obj,
+                base_=None,
+            ))
+            return obj
+        elif isinstance(obj, type):
+            egg.factories.append(Egg(
+                type_=obj,
+                qualifier=qualifier,
+                egg_=obj,
+                base_=None
+            ))
+            return obj
+        else:
+            raise AttributeError('Wrong egg obj type')
 
     return egg_dec
 
