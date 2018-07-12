@@ -297,7 +297,7 @@ Factory_T = Callable[..., T]
 
 def egg(qualifier: Union[str, Type] = ''):
     """
-    A function  that returns a decorator (or acts lika a decorator)
+    A function  that returns a decorator (or acts like a decorator)
     that marks class or function as a source of `base`.
 
     If a class is decorated, it should inherit after from `base` type.
@@ -307,7 +307,7 @@ def egg(qualifier: Union[str, Type] = ''):
 
     .. code-block:: python
 
-        @egg()
+        @egg
         class DepImpl(DepType):
             pass
 
