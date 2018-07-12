@@ -10,11 +10,10 @@ class Heater(IHeater):
         print("Heating...")
 
     def __repr__(self):
-        return '<Heater id=%s\nextra_pump=%r>' % (
-            id(self), self.extra_pump)
+        return '<Heater id=%s\nextra_pump=%r>' % (id(self), self.extra_pump)
 
 
-@egg()
+@egg
 class Pump(IPump):
     heater: IHeater = Inject()
 

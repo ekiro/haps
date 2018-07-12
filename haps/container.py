@@ -77,8 +77,7 @@ class Container:
         cls.__configured = False
 
     @staticmethod
-    def configure(
-            config: List[Egg], subclass: 'Container' = None) -> None:
+    def configure(config: List[Egg], subclass: 'Container' = None) -> None:
         """
         Configure haps manually, an alternative
         to :func:`~haps.Container.autodiscover`
@@ -104,9 +103,9 @@ class Container:
             container.register_scope(SINGLETON_SCOPE, SingletonScope)
 
     @classmethod
-    def autodiscover(
-            cls, module_paths: List[str], subclass: 'Container' = None
-    ) -> None:
+    def autodiscover(cls,
+                     module_paths: List[str],
+                     subclass: 'Container' = None) -> None:
         """
         Load all modules automatically and find bases and eggs.
 
@@ -154,8 +153,8 @@ class Container:
             cls.configure(config, subclass=subclass)
 
     def _find_egg(self, base_: Type, qualifier: str) -> Optional[Egg]:
-        return next((e for e in self.config if
-                     e.base_ is base_ and e.qualifier == qualifier), None)
+        return next((e for e in self.config
+                     if e.base_ is base_ and e.qualifier == qualifier), None)
 
     def get_object(self, base_: Type, qualifier: str = None) -> Any:
         """
@@ -170,8 +169,7 @@ class Container:
         """
         egg_ = self._find_egg(base_, qualifier)
         if egg_ is None:
-            raise UnknownDependency(
-                'Unknown dependency %s' % base_)
+            raise UnknownDependency('Unknown dependency %s' % base_)
 
         scope_id = getattr(egg_.egg, '__haps_custom_scope', INSTANCE_SCOPE)
 
@@ -297,10 +295,10 @@ base.classes = set()
 Factory_T = Callable[..., T]
 
 
-def egg(qualifier: str = None):
+def egg(qualifier: Union[str, Type] = ''):
     """
-    A function that returns a decorator that marks class or function as a
-    source of `base`.
+    A function  that returns a decorator (or acts lika a decorator)
+    that marks class or function as a source of `base`.
 
     If a class is decorated, it should inherit after from `base` type.
 
@@ -318,9 +316,11 @@ def egg(qualifier: str = None):
             return SomeDepImpl()
 
     :param qualifier: extra qualifier for dependency. Can be used to\
-            register more than one type for one base.
+            register more than one type for one base. If non-string argumet\
+            is passed, it'll act like a decorator.
     :return: decorator
     """
+    first_arg = qualifier
 
     def egg_dec(obj: Union[FunctionType, type]) -> T:
         if isinstance(obj, FunctionType):
@@ -328,25 +328,27 @@ def egg(qualifier: str = None):
             return_annotation = spec.return_annotation
             if return_annotation is Signature.empty:
                 raise ConfigurationError('No return type annotation')
-            egg.factories.append(Egg(
-                type_=spec.return_annotation,
-                qualifier=qualifier,
-                egg_=obj,
-                base_=None,
-            ))
+            egg.factories.append(
+                Egg(
+                    type_=spec.return_annotation,
+                    qualifier=qualifier,
+                    egg_=obj,
+                    base_=None,
+                ))
             return obj
         elif isinstance(obj, type):
-            egg.factories.append(Egg(
-                type_=obj,
-                qualifier=qualifier,
-                egg_=obj,
-                base_=None
-            ))
+            egg.factories.append(
+                Egg(type_=obj, qualifier=qualifier, egg_=obj, base_=None))
             return obj
         else:
             raise AttributeError('Wrong egg obj type')
 
-    return egg_dec
+    if isinstance(qualifier, str):
+        qualifier = qualifier or None
+        return egg_dec
+    else:
+        qualifier = None
+        return egg_dec(first_arg)
 
 
 egg.factories: List[Egg] = []

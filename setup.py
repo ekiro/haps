@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='haps',
-    version='1.0.4',
+    version='1.0.5',
     packages=find_packages(),
     url='https://github.com/ekiro/haps',
     license='MIT License',
@@ -23,8 +23,7 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
-        "Operating System :: OS Independent",
-        "Topic :: Software Development",
+        "Operating System :: OS Independent", "Topic :: Software Development",
         "Intended Audience :: Developers",
-        "Development Status :: 5 - Production/Stable"]
-)
+        "Development Status :: 5 - Production/Stable"
+    ])

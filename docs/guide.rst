@@ -104,13 +104,13 @@ we will start with UserService and Mailer implementation.
     from user_module.core.interfaces import IDatabase, IMailer, IUserService
 
 
-    @egg()
+    @egg
     class DummyMailer(IMailer):
         def send(self, email: str, message: str) -> None:
             print(f'Mail to {email}: {message}')
 
 
-    @egg()
+    @egg
     class UserService(IUserService):
         db: IDatabase = Inject()
         mailer: IMailer = Inject()
@@ -131,7 +131,7 @@ we will start with UserService and Mailer implementation.
 
 There are two classes, and the first one is quite simple, it inherits from
 :code:`IMailer` and implements its only method :code:`send`. The only new
-thing here is the :code:`@egg()` decorator. You can use it to tell *haps* about any
+thing here is the :code:`@egg` decorator. You can use it to tell *haps* about any
 callable (a class is also a callable) that returns the implementation of a base type.
 Now you can probably guess how *haps* can resolve right dependencies - it looks into
 inheritance chain.
@@ -196,7 +196,7 @@ may be more complicated, so we'll use a factory function.
                 return True
 
 
-    @egg()
+    @egg
     @scope(SINGLETON_SCOPE)
     def database_factory() -> IDatabase:
         db = InMemoryDb()

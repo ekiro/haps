@@ -59,6 +59,10 @@ Contribute
 Changelog
 ---------
 
+1.0.5 (2018-07-12)
+.....................
+* :code:`@egg` decorator can be used without function invocation
+
 1.0.4 (2018-06-30)
 .....................
 
