@@ -43,6 +43,14 @@ Install `requirements.test.txt` and run `py.test` in main directory.
 
 # Changelog
 
-## 1.0.0 (15.06.2018)
+## 1.0.5 (2018-07-12)
+@egg decorator can be used without function invocation
+
+## 1.0.4 (2018-06-30)
+Add support for python 3.7
+Fix autodiscover sample
+
+## 1.0.0 (2018-06-15)
 
 First stable release
+
