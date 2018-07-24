@@ -128,11 +128,17 @@ class Container:
             if isinstance(pkg, str):
                 pkg: ModuleType = importlib.import_module(pkg)
             results = {}
-            for loader, name, is_pkg in pkgutil.walk_packages(pkg.__path__):
-                full_name = pkg.__name__ + '.' + name
-                results[full_name] = importlib.import_module(full_name)
-                if is_pkg:
-                    results.update(walk(full_name))
+
+            try:
+                path = pkg.__path__
+            except AttributeError:
+                results[pkg.__name__] = importlib.import_module(pkg.__name__)
+            else:
+                for loader, name, is_pkg in pkgutil.walk_packages(path):
+                    full_name = pkg.__name__ + '.' + name
+                    results[full_name] = importlib.import_module(full_name)
+                    if is_pkg:
+                        results.update(walk(full_name))
             return results
 
         with cls._lock:

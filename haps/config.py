@@ -2,9 +2,9 @@ import os
 from functools import partial
 from threading import RLock
 from types import FunctionType
-from typing import Type, Any
+from typing import Any, Type
 
-from haps.exceptions import UnknownConfigVariable, ConfigurationError
+from haps.exceptions import ConfigurationError, UnknownConfigVariable
 
 _NONE = object()
 
@@ -48,14 +48,14 @@ class Configuration:
         except KeyError:
             try:
                 var = self._resolve_var(var_name)
-            except UnknownConfigVariable:
+            except UnknownConfigVariable as e:
                 if default is not _NONE:
                     if callable(default):
                         return default()
                     else:
                         return default
                 else:
-                    raise
+                    raise e
             else:
                 self.cache[var_name] = var
                 return var
@@ -90,8 +90,6 @@ class Configuration:
 
 
 class Config:
-    configuration: Configuration = Configuration()
-
     def __init__(self, var_name: str = None, default=_NONE) -> None:
         self._default = default
         self._var_name = var_name
@@ -99,7 +97,7 @@ class Config:
         self._name = None
 
     def __get__(self, instance: 'Config', owner: Type) -> Any:
-        var = self.configuration.get_var(self._var_name, self._default)
+        var = Configuration().get_var(self._var_name, self._default)
         setattr(instance, self._var_name, var)
         return var
 

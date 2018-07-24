@@ -1,23 +1,8 @@
-import json
-
 import pytest
 
 import haps
 from haps import exceptions
 from haps.scopes.instance import InstanceScope
-
-
-@pytest.fixture
-def cfg_file(tmpdir):
-    data = {
-        'deps': {
-            'container': 'haps.Container'
-        }
-    }
-
-    f = tmpdir.join('cfg.json')
-    f.write(json.dumps(data))
-    return str(f.realpath())
 
 
 def test_configure():
