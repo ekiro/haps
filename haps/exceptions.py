@@ -20,3 +20,7 @@ class UnknownScope(TypeError):
 
 class CallError(TypeError):
     pass
+
+
+class UnknownConfigVariable(ConfigurationError):
+    pass
