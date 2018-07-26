@@ -19,3 +19,11 @@ class Pump(IPump):
 
     def __repr__(self):
         return '<Pump id=%s heater=%r>' % (id(self), self.heater)
+
+
+@egg(profile='test')
+class PumpTest(IPump):
+    heater: IHeater = Inject()
+
+    def __repr__(self):
+        return '<PumpTest id=%s heater=%r>' % (id(self), self.heater)

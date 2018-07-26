@@ -17,6 +17,8 @@ from haps.scopes.singleton import SingletonScope
 INSTANCE_SCOPE = '__instance'  # default scopes
 SINGLETON_SCOPE = '__singleton'
 
+PROFILES = 'haps.profiles'
+
 T = TypeVar("T")
 
 
@@ -91,7 +93,7 @@ class Container:
         :param subclass: Optional Container subclass that should be used
         """
 
-        profiles = Configuration().get_var('haps.profiles', tuple)
+        profiles = Configuration().get_var(PROFILES, tuple)
         assert isinstance(profiles, (list, tuple))
         profiles = tuple(profiles) + (None,)
         print(profiles)

@@ -1,4 +1,5 @@
-from haps import Container, Inject, inject
+from haps import PROFILES, Container, Inject, inject
+from haps.config import Configuration
 from samples.autodiscover.services.bases import IHeater, IPump
 
 
@@ -14,5 +15,6 @@ class CoffeeMaker:
 
 
 if __name__ == '__main__':
+    Configuration().set(PROFILES, ('test',))
     Container.autodiscover(['samples.autodiscover.services'])
     print(CoffeeMaker().make_coffee())
