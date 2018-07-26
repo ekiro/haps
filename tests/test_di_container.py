@@ -2,6 +2,8 @@ import pytest
 
 import haps
 from haps import exceptions
+from haps.config import Configuration
+from haps.exceptions import ConfigurationError
 from haps.scopes.instance import InstanceScope
 
 
@@ -144,8 +146,8 @@ def test_named_configuration_property_injection(some_class):
         pass
 
     haps.Container.configure([
-        haps.Egg(some_class, some_class, None, NewClass),
-        haps.Egg(some_class, some_class, 'extra', NewClass2)
+        haps.Egg(some_class, NewClass, None, NewClass),
+        haps.Egg(some_class, NewClass2, 'extra', NewClass2)
     ])
 
     class AnotherClass:
@@ -169,3 +171,52 @@ def test_autodiscovery():
     cm = CoffeeMaker()
     assert isinstance(cm.pump, IPump)
     assert isinstance(cm.heater, IHeater)
+
+
+def test_ambiguous_dependency(some_class):
+    class NewClass(some_class):
+        pass
+
+    class NewClass2(some_class):
+        pass
+
+    with pytest.raises(ConfigurationError) as e:
+        haps.Container.configure([
+            haps.Egg(some_class, some_class, None, NewClass),
+            haps.Egg(some_class, some_class, None, NewClass2)
+        ])
+
+    assert e.value.args[0] == f'Ambiguous implementation {repr(some_class)}'
+
+
+@pytest.mark.parametrize("profiles,expected", [
+    ((), 'NewClass'),
+    (('test',), 'NewClass2'),
+    (['prod'], 'NewClass3'),
+    (['non-existing', 'test'], 'NewClass2'),
+    (('non-existing', 'test', 'prod'), 'NewClass2'),
+    (('non-existing', 'prod', 'test'), 'NewClass3')
+])
+def test_dependencies_with_profiles(some_class, profiles, expected):
+    class NewClass(some_class):
+        pass
+
+    class NewClass2(some_class):
+        pass
+
+    class NewClass3(some_class):
+        pass
+
+    Configuration().set('haps.profiles', profiles)
+    haps.Container.configure([
+        haps.Egg(some_class, NewClass, None, NewClass),
+        haps.Egg(some_class, NewClass2, None, NewClass2, 'test'),
+        haps.Egg(some_class, NewClass3, None, NewClass3, 'prod')
+    ])
+
+    class AnotherClass:
+        some_instance: some_class = haps.Inject()
+
+    some_instance = AnotherClass()
+
+    assert type(some_instance.some_instance).__name__ == expected

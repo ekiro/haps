@@ -7,6 +7,7 @@ from threading import RLock
 from types import FunctionType, ModuleType
 from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Union
 
+from haps.config import Configuration
 from haps.exceptions import (AlreadyConfigured, CallError, ConfigurationError,
                              NotConfigured, UnknownDependency, UnknownScope)
 from haps.scopes import Scope
@@ -27,9 +28,11 @@ class Egg:
     type_: Type
     qualifier: Optional[str]
     egg: Callable
+    profile: Optional[str]
 
     def __init__(self, base_: Optional[Type], type_: Type,
-                 qualifier: Optional[str], egg_: Callable) -> None:
+                 qualifier: Optional[str], egg_: Callable,
+                 profile: str = None) -> None:
         """
         :param base_: `base` of dependency, used for retrieve object
         :param type_: `type` of dependency (for functions it's a return type)
@@ -37,11 +40,13 @@ class Egg:
             register more than one type for one base.
         :param egg_: any callable that returns an instance of dependency, can\
             be class or function
+        :param profile: dependency profile name
         """
         self.base_ = base_
         self.type_ = type_
         self.qualifier = qualifier
         self.egg = egg_
+        self.profile = profile
 
     def __repr__(self):
         return (f'<haps.container.Egg base_={repr(self.base_)} '
@@ -85,6 +90,33 @@ class Container:
         :param config: List of configured Eggs
         :param subclass: Optional Container subclass that should be used
         """
+
+        profiles = Configuration().get_var('haps.profiles', tuple)
+        assert isinstance(profiles, (list, tuple))
+        profiles = tuple(profiles) + (None,)
+        print(profiles)
+
+        seen = set()
+        registered = set()
+
+        filtered_config: List[Egg] = []
+
+        for profile in profiles:
+            for egg_ in (e for e in config if e.profile == profile):
+                ident = (egg_.base_, egg_.qualifier, egg_.profile)
+                if ident in seen:
+                    raise ConfigurationError(
+                        "Ambiguous implementation %s" % repr(egg_.base_))
+                dep_ident = (egg_.base_, egg_.qualifier)
+                if dep_ident in registered:
+                    continue
+
+                filtered_config.append(egg_)
+
+                registered.add(dep_ident)
+                seen.add(ident)
+        config = filtered_config
+
         with Container._lock:
             if Container.__configured:
                 raise AlreadyConfigured
@@ -146,14 +178,9 @@ class Container:
                 walk(module_path)
 
             config: List[Egg] = []
-            configured = set()
             for egg_ in egg.factories:
                 base_ = find_base(base.classes, egg_.type_)
-                if (base_, egg_.qualifier) in configured:
-                    raise ConfigurationError(
-                        "Ambiguous implementation %s" % repr(base_))
                 egg_.base_ = base_
-                configured.add((base_, egg_.qualifier))
                 config.append(egg_)
 
             cls.configure(config, subclass=subclass)
@@ -301,9 +328,9 @@ base.classes = set()
 Factory_T = Callable[..., T]
 
 
-def egg(qualifier: Union[str, Type] = ''):
+def egg(qualifier: Union[str, Type] = '', profile: str = None):
     """
-    A function  that returns a decorator (or acts like a decorator)
+    A function that returns a decorator (or acts like a decorator)
     that marks class or function as a source of `base`.
 
     If a class is decorated, it should inherit after from `base` type.
@@ -324,6 +351,7 @@ def egg(qualifier: Union[str, Type] = ''):
     :param qualifier: extra qualifier for dependency. Can be used to\
             register more than one type for one base. If non-string argumet\
             is passed, it'll act like a decorator.
+    :param profile: Optional profile within this dependency should be used
     :return: decorator
     """
     first_arg = qualifier
@@ -340,11 +368,13 @@ def egg(qualifier: Union[str, Type] = ''):
                     qualifier=qualifier,
                     egg_=obj,
                     base_=None,
+                    profile=profile
                 ))
             return obj
         elif isinstance(obj, type):
             egg.factories.append(
-                Egg(type_=obj, qualifier=qualifier, egg_=obj, base_=None))
+                Egg(type_=obj, qualifier=qualifier, egg_=obj, base_=None,
+                    profile=profile))
             return obj
         else:
             raise AttributeError('Wrong egg obj type')
