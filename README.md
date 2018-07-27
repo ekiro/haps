@@ -1,4 +1,4 @@
-# haps [![PyPI](https://badge.fury.io/py/haps.svg)](https://pypi.python.org/pypi/haps/) [![Build Status](https://travis-ci.org/ekiro/haps.svg?branch=master)](https://travis-ci.org/ekiro/haps)
+# haps [![PyPI](https://badge.fury.io/py/haps.png)](https://pypi.python.org/pypi/haps/) [![Build Status](https://travis-ci.org/ekiro/haps.svg?branch=master)](https://travis-ci.org/ekiro/haps)
 Haps [χaps] is a simple DI library, with IoC container included. It is written in pure Python with no external dependencies.
 
 Look how easy it is to use:
