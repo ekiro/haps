@@ -87,6 +87,7 @@ The project is licensed under the MIT license.
    :caption: Contents:
 
    guide
+   profiles
    api
    scopes
    exceptions

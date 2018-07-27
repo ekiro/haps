@@ -14,3 +14,5 @@ Exceptions
 .. autoexception:: haps.exceptions.UnknownScope
 
 .. autoexception:: haps.exceptions.CallError
+
+.. autoexception:: haps.exceptions.UnknownConfigVariable

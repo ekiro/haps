@@ -55,3 +55,11 @@ def test_env_config(env_config):
     assert Configuration().get_var('var_b') == 'b'
     assert Configuration().get_var('var_c') == 'c'
     assert Configuration().get_var('var_d') == 'd'
+
+
+def test_configuration_chaining():
+    Configuration().set("a", 1).set("b", 2).env_resolver("d").set("c", 3)
+    assert Configuration().get_var('a') == 1
+    assert Configuration().get_var('b') == 2
+    assert Configuration().get_var('c') == 3
+    assert Configuration().get_var('d', None) is None

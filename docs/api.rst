@@ -57,3 +57,21 @@ Dependencies
 .. autofunction:: haps.egg
 
 .. autofunction:: haps.scope
+
+
+Configuration
+---------------------------------
+
+.. autoclass:: haps.config.Configuration
+
+.. automethod:: haps.config.Configuration.get_var
+
+.. automethod:: haps.config.Configuration.resolver
+
+.. automethod:: haps.config.Configuration.env_resolver
+
+.. automethod:: haps.config.Configuration.set
+
+.. autoclass:: haps.config.Config
+
+.. automethod:: haps.config.Config.__init__

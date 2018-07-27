@@ -1,5 +1,6 @@
 import importlib
 import inspect
+import os
 import pkgutil
 from functools import wraps
 from inspect import Signature
@@ -54,6 +55,14 @@ class Egg:
         return (f'<haps.container.Egg base_={repr(self.base_)} '
                 f'type_={repr(self.type_)} qualifier={repr(self.qualifier)} '
                 f'egg={repr(self.egg)}>')
+
+
+@Configuration.resolver(PROFILES)
+def _profiles_resolver() -> tuple:
+    profiles = os.getenv('HAPS_PROFILES')
+    if profiles:
+        return tuple(p.strip() for p in profiles.split(','))
+    return tuple()
 
 
 class Container:
@@ -346,14 +355,18 @@ def egg(qualifier: Union[str, Type] = '', profile: str = None):
         class DepImpl(DepType):
             pass
 
+        @egg(profile='test')
+        class TestDepImpl(DepType):
+            pass
+
         @egg(qualifier='special_dep')
         def dep_factory() -> DepType:
             return SomeDepImpl()
 
     :param qualifier: extra qualifier for dependency. Can be used to\
-            register more than one type for one base. If non-string argumet\
+            register more than one type for one base. If non-string argument\
             is passed, it'll act like a decorator.
-    :param profile: Optional profile within this dependency should be used
+    :param profile: An optional profile within this dependency should be used
     :return: decorator
     """
     first_arg = qualifier
