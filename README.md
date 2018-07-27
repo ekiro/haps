@@ -45,7 +45,7 @@ Install `requirements.test.txt` and run `py.test` in main directory.
 
 
 ## 1.1.1 (2018-07-27)
-- Fix bug with optional arguments for functions decorated with :code:`@inject`
+- Fix bug with optional arguments for functions decorated with `@inject`
 
 ## 1.1.0 (2018-07-26)
 - Add configuration module
