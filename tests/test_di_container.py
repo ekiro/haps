@@ -49,6 +49,27 @@ def test_inject_class(some_class):
     assert isinstance(some_instance.some_class_instance, some_class)
 
 
+def test_inject_into_function_with_optional_args(some_class):
+    haps.Container.configure([
+        haps.Egg(some_class, some_class, None, some_class)
+    ])
+
+    class NotRegistered:
+        pass
+
+    @haps.inject
+    def func(some_class_instance: some_class, no_annotation,
+             not_registered: NotRegistered):
+        return some_class_instance, no_annotation, not_registered
+
+    not_reg = NotRegistered()
+    sci, na, nr = func(no_annotation=5, not_registered=not_reg)
+
+    assert isinstance(sci, some_class)
+    assert na == 5
+    assert nr is not_reg
+
+
 def test_not_existing_scope():
     @haps.scope('custom')
     class CustomScopedCls:

@@ -9,7 +9,7 @@ from types import FunctionType, ModuleType
 from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Union
 
 from haps.config import Configuration
-from haps.exceptions import (AlreadyConfigured, CallError, ConfigurationError,
+from haps.exceptions import (AlreadyConfigured, ConfigurationError,
                              NotConfigured, UnknownDependency, UnknownScope)
 from haps.scopes import Scope
 from haps.scopes.instance import InstanceScope
@@ -105,7 +105,6 @@ class Container:
         profiles = Configuration().get_var(PROFILES, tuple)
         assert isinstance(profiles, (list, tuple))
         profiles = tuple(profiles) + (None,)
-        print(profiles)
 
         seen = set()
         registered = set()
@@ -304,18 +303,16 @@ def inject(fun: Callable) -> Callable:
     injectables: Dict[str, Any] = {}
     for name, param in sig.parameters.items():
         type_ = param.annotation
-        if type_ is Signature.empty:
+        if name == 'self':
             continue
         else:
             injectables[name] = type_
 
     @wraps(fun)
     def _inner(*args, **kwargs):
-        if len(args) > 1:
-            raise CallError('Cannot call this method with arguments ')
         container = Container()
         for n, t in injectables.items():
-            if name not in kwargs:
+            if n not in kwargs:
                 kwargs[n] = container.get_object(t)
 
         return fun(*args, **kwargs)
