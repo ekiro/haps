@@ -59,6 +59,13 @@ Contribute
 Changelog
 ---------
 
+1.1.0 (2018-07-26)
+.....................
+* Add configuration module
+* Add application class and runner
+* Add profiles
+* Minor fixes
+
 1.0.5 (2018-07-12)
 .....................
 * :code:`@egg` decorator can be used without function invocation
