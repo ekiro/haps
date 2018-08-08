@@ -1,8 +1,4 @@
-try:
-    import queue
-except ImportError:
-    import Queue as queue  # python2
-
+import queue
 import threading
 
 from haps.scopes.thread import ThreadScope
@@ -16,9 +12,10 @@ def test_get_object(some_class):
 def test_get_multiple_objects(some_class):
     q = queue.Queue()
 
+    scope = ThreadScope()
+
     class MyThread(threading.Thread):
         def run(self):
-            scope = ThreadScope()
             for _ in range(100):
                 q.put(scope.get_object(some_class))
 

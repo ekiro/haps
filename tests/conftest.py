@@ -1,7 +1,14 @@
+import sys
+
 import pytest
 
 import haps
 import haps.config
+
+collect_ignore = []
+if sys.version_info < (3, 7):
+    collect_ignore.append("test_context_scope.py")
+    collect_ignore.append("haps/scopes/context.py")
 
 
 @pytest.fixture(scope='session')
