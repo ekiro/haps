@@ -23,7 +23,7 @@ def some_class2():
 
 
 @pytest.fixture(scope='function', autouse=True)
-def reset_containter(request):
+def reset_container(request):
     request.addfinalizer(haps.Container._reset)
 
 
