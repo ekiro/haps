@@ -199,7 +199,7 @@ class Container:
         return next((e for e in self.config
                      if e.base_ is base_ and e.qualifier == qualifier), None)
 
-    def get_object(self, base_: Type, qualifier: str = None) -> Any:
+    def get_object(self, base_: Type[T], qualifier: str = None) -> T:
         """
         Get instance directly from the container.
 
