@@ -8,7 +8,8 @@ def readme():
 
 setup(
     name='haps',
-    version='1.1.1',
+    version='1.1.2',
+    package_data={"haps": ["py.typed"]},
     packages=find_packages(),
     url='https://github.com/ekiro/haps',
     license='MIT License',
