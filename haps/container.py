@@ -37,12 +37,12 @@ class Egg:
                  qualifier: Optional[str], egg_: Callable,
                  profile: str = None) -> None:
         """
-        :param base_: `base` of dependency, used for retrieve object
+        :param base_: `base` of dependency, used to retrieve object
         :param type_: `type` of dependency (for functions it's a return type)
-        :param qualifier: extra qualifier for dependency. Can be used to\
+        :param qualifier: extra qualifier for dependency. Can be used to
             register more than one type for one base.
-        :param egg_: any callable that returns an instance of dependency, can\
-            be class or function
+        :param egg_: any callable that returns an instance of dependency, can
+            be a class or a function
         :param profile: dependency profile name
         """
         self.base_ = base_
@@ -226,7 +226,7 @@ class Container:
 
     def register_scope(self, name: str, scope_class: Type[Scope]) -> None:
         """
-        Register new scopes which should be subclass of `Scope`
+        Register new scopes which should be subclasses of `Scope`
 
         :param name: Name of new scopes
         :param scope_class: Class of new scopes
@@ -248,10 +248,10 @@ class Inject:
 
     .. important::
 
-        Dependency is injected (created/fetched) at the moment of attribute
-        access, not instance of `SomeClass` creation. So, even if you create
-        an instance of `SomeClass`, the instance of `DepType` may never be
-        created.
+        Dependency is injected (created/fetched) at the moment of accessing
+        the attribute, not at the moment of instance creation. So, even if
+        you create an instance of `SomeClass`, the instance of `DepType` may
+        never be created.
     """
 
     def __init__(self, qualifier: str = None):
@@ -341,9 +341,9 @@ def egg(qualifier: Union[str, Type] = '', profile: str = None):
     A function that returns a decorator (or acts like a decorator)
     that marks class or function as a source of `base`.
 
-    If a class is decorated, it should inherit after from `base` type.
+    If a class is decorated, it should inherit from `base` type.
 
-    If a function is decorated, it declared return type should inherit after
+    If a function is decorated, it declared return type should inherit from
     some `base` type, or it should be the `base` type.
 
     .. code-block:: python
@@ -360,8 +360,8 @@ def egg(qualifier: Union[str, Type] = '', profile: str = None):
         def dep_factory() -> DepType:
             return SomeDepImpl()
 
-    :param qualifier: extra qualifier for dependency. Can be used to\
-            register more than one type for one base. If non-string argument\
+    :param qualifier: extra qualifier for dependency. Can be used to
+            register more than one type for one base. If non-string argument
             is passed, it'll act like a decorator.
     :param profile: An optional profile within this dependency should be used
     :return: decorator

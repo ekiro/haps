@@ -42,7 +42,7 @@ class Pump:
         return '<Pump id=%s heater=%r>' % (id(self), self.heater)
 
 
-@scope(SINGLETON_SCOPE)  # Only one instance is managed for whole application
+@scope(SINGLETON_SCOPE)  # Only one instance per application is allowed
 class ExtraPump:
     def __repr__(self):
         return '<ExtraPump id=%s>' % (id(self),)

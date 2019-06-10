@@ -7,7 +7,7 @@ from haps.exceptions import ConfigurationError
 
 class Application:
     """
-    Base Application class that should be the entrupoint for haps
+    Base Application class that should be the entry point for haps
     applications. You can override `__main__` to inject dependencies.
     """
 
@@ -24,7 +24,7 @@ class Application:
 
     def run(self) -> None:
         """
-        Method for application entrypoint (like the `main` method in C).
+        Method for application entry point (like the `main` method in C).
         Must be implemented.
         """
         raise NotImplementedError
