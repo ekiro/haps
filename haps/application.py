@@ -7,7 +7,7 @@ from haps.exceptions import ConfigurationError
 
 class Application:
     """
-    Base Application class that should be the entrupoint for haps
+    Base Application class that should be the entrypoint for haps
     applications. You can override `__main__` to inject dependencies.
     """
 
