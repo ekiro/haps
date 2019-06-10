@@ -27,7 +27,7 @@ class Configuration:
     """
     Configuration container, a simple object to manage application config
     variables.
-    Variables can be set manually, from thw environment, or resolved
+    Variables can be set manually, from the environment, or resolved
     via custom function.
 
     """
@@ -109,7 +109,7 @@ class Configuration:
         :param env_name: An optional environment variable name. If not set\
             haps looks for `HAPS_var_name`
         :param default: Default value for variable. If it's a callable,\
-            is called before return. If not provided\
+            it is called before return. If not provided\
             :class:`~haps.exceptions.UnknownConfigVariable` is raised
         :return: :class:`~haps.config.Configuration` instance for easy\
                   chaining
@@ -142,7 +142,7 @@ class Configuration:
 
 class Config:
     """
-    Descriptor providing config variables as class properties.
+    Descriptor providing config variables as a class properties.
 
     .. code-block:: python
 
@@ -157,7 +157,7 @@ class Config:
         :param var_name: An optional variable name. If not set the property\
                 name is used.
         :param default: Default value for variable. If it's a callable,\
-            is called before return. If not provided\
+            it is called before return. If not provided\
             :class:`~haps.exceptions.UnknownConfigVariable` is raised
         """
         self._default = default
