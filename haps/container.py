@@ -2,11 +2,14 @@ import importlib
 import inspect
 import os
 import pkgutil
+import traceback
 from functools import wraps
 from inspect import Signature
+from itertools import islice
 from threading import RLock
-from types import FunctionType, ModuleType
-from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Union
+from types import FunctionType, MappingProxyType, ModuleType
+from typing import (Any, Callable, Dict, List, Optional, Type, TypeVar, Union,
+                    get_type_hints)
 
 from haps.config import Configuration
 from haps.exceptions import (AlreadyConfigured, ConfigurationError,
@@ -277,6 +280,47 @@ class Inject:
             raise TypeError('No annotation for Inject')
 
 
+def _evaluate_runtime_type_hints(
+        fun: Callable, parameters: MappingProxyType) -> MappingProxyType:
+    """
+    Utility function which tries to evaluate runtime type hints of the
+    parameters using the locals of the passed function.
+
+    :param fun: function which locals should be used when evaluating
+    :param parameters: mapping of the parameter name to the parameter
+    :return: unordered mapping of the parameter name to the evaluated type
+    """
+    runtime_type_parameters = {}
+    for name, parameter in parameters.items():
+        type_ = parameter.annotation
+        if name == 'self':
+            continue
+
+        if isinstance(type_, str):
+            runtime_type_parameters[name] = parameter
+
+    if not runtime_type_parameters:
+        return MappingProxyType({
+            name: parameter.annotation
+            for name, parameter in parameters.items()
+        })
+
+    evaluated_parameter_types = {}
+
+    # Assuming that this is called directly in the inject decorator
+    inject_outer_frame = next(islice(traceback.walk_stack(None), 2, None))
+    type_hints = get_type_hints(fun, localns=inject_outer_frame[0].f_locals)
+
+    for name, parameter in parameters.items():
+        if name not in runtime_type_parameters:
+            evaluated_parameter_types[name] = parameter.annotation
+            continue
+
+        evaluated_parameter_types[name] = type_hints[name]
+
+    return MappingProxyType(evaluated_parameter_types)
+
+
 def inject(fun: Callable) -> Callable:
     """
     A decorator for injection dependencies into functions/methods, based
@@ -301,8 +345,9 @@ def inject(fun: Callable) -> Callable:
     sig = inspect.signature(fun)
 
     injectables: Dict[str, Any] = {}
-    for name, param in sig.parameters.items():
-        type_ = param.annotation
+
+    parameters = _evaluate_runtime_type_hints(fun, sig.parameters)
+    for name, type_ in parameters.items():
         if name == 'self':
             continue
         else:

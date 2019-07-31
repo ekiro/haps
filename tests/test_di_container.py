@@ -49,6 +49,40 @@ def test_inject_class(some_class):
     assert isinstance(some_instance.some_class_instance, some_class)
 
 
+class GlobalClass:
+    pass
+
+
+def test_inject_with_global_runtime_type_annotation():
+    haps.Container.configure([
+        haps.Egg(GlobalClass, GlobalClass, None, GlobalClass),
+    ])
+
+    class AnotherClass:
+        @haps.inject
+        def __init__(self, global_class_instance: 'GlobalClass'):
+            self.global_class_instance = global_class_instance
+
+    some_instance = AnotherClass()
+
+    assert isinstance(some_instance.global_class_instance, GlobalClass)
+
+
+def test_inject_with_local_runtime_type_annotation(some_class):
+    haps.Container.configure([
+        haps.Egg(some_class, some_class, None, some_class),
+    ])
+
+    class AnotherClass:
+        @haps.inject
+        def __init__(self, some_class_instance: 'some_class'):
+            self.some_class_instance = some_class_instance
+
+    some_instance = AnotherClass()
+
+    assert isinstance(some_instance.some_class_instance, some_class)
+
+
 def test_inject_into_function_with_optional_args(some_class):
     haps.Container.configure([
         haps.Egg(some_class, some_class, None, some_class)
