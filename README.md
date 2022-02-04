@@ -1,4 +1,4 @@
-# haps [![PyPI](https://badge.fury.io/py/haps.png)](https://pypi.python.org/pypi/haps/) [![Build Status](https://travis-ci.org/lunarwings/haps.svg?branch=master)](https://travis-ci.org/lunarwings/haps)
+# haps [![PyPI](https://badge.fury.io/py/haps.png)](https://pypi.python.org/pypi/haps/) [![Python application](https://github.com/lunarwings/haps/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/lunarwings/haps/actions/workflows/python-app.yml)
 Haps [χaps] is a simple DI library, with IoC container included. It is written in pure Python with no external dependencies.
 
 Look how easy it is to use:
@@ -46,7 +46,8 @@ Install `requirements.test.txt` and run `py.test` in main directory.
 ## 1.1.3 (2022-02-04)
 - Add `>>` operator
 - Add `DI` alias
-- Update `.travis.yml`
+- ~~Update~~ Remove `.travis.yml`
+- Setup GitHub actions
 
 ## 1.1.1 (2018-07-27)
 - Fix bug with optional arguments for functions decorated with `@inject`
