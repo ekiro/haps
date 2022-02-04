@@ -27,7 +27,7 @@ Container().register_scope(THREAD_SCOPE, ThreadScope)
 
 if __name__ == '__main__':
     import time
-    from threading import Thread, RLock
+    from threading import RLock, Thread
 
     lock = RLock()
 

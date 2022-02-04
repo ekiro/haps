@@ -14,7 +14,7 @@ def test_application():
 
 
 def test_application_with_autodiscovery():
-    from samples.autodiscover.sample import (IPump, IHeater)
+    from samples.autodiscover.sample import IHeater, IPump
 
     class App(Application):
         ran = False

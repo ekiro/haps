@@ -49,6 +49,16 @@ def test_inject_class(some_class):
     assert isinstance(some_instance.some_class_instance, some_class)
 
 
+def test_inject_class_by_operator(some_class):
+    haps.Container.configure([
+        haps.Egg(some_class, some_class, None, some_class)
+    ])
+
+    some_class_instance = haps.DI() >> some_class
+
+    assert isinstance(some_class_instance, some_class)
+
+
 def test_inject_into_function_with_optional_args(some_class):
     haps.Container.configure([
         haps.Egg(some_class, some_class, None, some_class)
@@ -186,7 +196,7 @@ def test_named_configuration_property_injection(some_class):
 
 
 def test_autodiscovery():
-    from samples.autodiscover.sample import (CoffeeMaker, IPump, IHeater)
+    from samples.autodiscover.sample import CoffeeMaker, IHeater, IPump
     haps.Container.autodiscover(['samples.autodiscover.services'])
 
     cm = CoffeeMaker()

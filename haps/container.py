@@ -199,7 +199,7 @@ class Container:
         return next((e for e in self.config
                      if e.base_ is base_ and e.qualifier == qualifier), None)
 
-    def get_object(self, base_: Type, qualifier: str = None) -> Any:
+    def get_object(self, base_: Type[T], qualifier: str = None) -> T:
         """
         Get instance directly from the container.
 
@@ -235,6 +235,14 @@ class Container:
             if name in self.scopes:
                 raise AlreadyConfigured(f'Scope {name} already registered')
             self.scopes[name] = scope_class()
+
+    def __rshift__(self, other: Type[T]) -> T:
+        """
+        Alias for `get_object`
+
+        :param other: `base` of this object
+        """
+        return self.get_object(other)
 
 
 class Inject:

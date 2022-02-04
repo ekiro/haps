@@ -43,6 +43,10 @@ Install `requirements.test.txt` and run `py.test` in main directory.
 
 # Changelog
 
+## 1.1.3 (2022-02-04)
+- Add `>>` operator
+- Add `DI` alias
+- Update `.travis.yml`
 
 ## 1.1.1 (2018-07-27)
 - Fix bug with optional arguments for functions decorated with `@inject`
